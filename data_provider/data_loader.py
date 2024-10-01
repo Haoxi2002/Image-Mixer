@@ -35,6 +35,7 @@ class Dataset_Basic(Dataset):
         self.lc = self.args.lc
         self.expand = self.args.expand
         self.model_type = self.args.model_type
+        self.devide = 12
 
         self.__read_data__()
 
@@ -45,23 +46,16 @@ class Dataset_Basic(Dataset):
             cols.remove(self.target)
             cols.remove('date')
             df_raw = df_raw[['date'] + cols + [self.target]]
-        if 'ETTh' in self.data_path:
-            border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
-            border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
-        elif 'ETTm' in self.data_path:
-            border1s = [0, 12 * 30 * 24 * 4 - self.seq_len, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len]
-            border2s = [12 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 8 * 30 * 24 * 4]
-        else:
-            if self.pred_len < 96:  # short-term TSF
-                num_train = int(len(df_raw) * 0.6)
-            else:  # long-term TSF
-                num_train = int(len(df_raw) * 0.7)
-            num_test = int(len(df_raw) * 0.2)
-            num_vali = len(df_raw) - num_train - num_test
-            if 'ECW' in self.data_path and '08' not in self.data_path:  # only test
-                num_test = len(df_raw)
-            border1s = [0, num_train, len(df_raw) - num_test]
-            border2s = [num_train, num_train + num_vali, len(df_raw)]
+        if self.pred_len < 96:  # short-term TSF
+            num_train = int(len(df_raw) * 0.6)
+        else:  # long-term TSF
+            num_train = int(len(df_raw) * 0.7)
+        num_test = int(len(df_raw) * 0.2)
+        num_vali = len(df_raw) - num_train - num_test
+        if 'ECW' in self.data_path and '08' not in self.data_path:  # only test
+            num_test = len(df_raw)
+        border1s = [0, num_train, len(df_raw) - num_test]
+        border2s = [num_train, num_train + num_vali, len(df_raw)]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
@@ -124,28 +118,49 @@ class Dataset_Basic(Dataset):
         return imgX
 
     def __getitem__(self, index):
-        device = index // ((self.data_x.shape[0] - self.seq_len - self.pred_len) // 12)
-        index = index % ((self.data_x.shape[0] - self.seq_len - self.pred_len) // 12)
-        s_begin = index * 12
-        s_end = s_begin + self.seq_len
-        r_begin = s_end - self.label_len
-        r_end = r_begin + self.label_len + self.pred_len
+        if 'ECW' in self.data_path:
+            device = index // ((self.data_x.shape[0] - self.seq_len - self.pred_len) // self.devide)
+            index = index % ((self.data_x.shape[0] - self.seq_len - self.pred_len) // self.devide)
+            s_begin = index * self.devide
+            s_end = s_begin + self.seq_len
+            r_begin = s_end - self.label_len
+            r_end = r_begin + self.label_len + self.pred_len
 
-        seq_x = self.data_x[s_begin:s_end, device][:, np.newaxis]
-        seq_y = self.data_y[r_begin:r_end, device][:, np.newaxis]
+            seq_x = self.data_x[s_begin:s_end, device][:, np.newaxis]
+            seq_y = self.data_y[r_begin:r_end, device][:, np.newaxis]
 
-        if self.model_type == 0:
-            fig_x = self.fig_data_x[device * self.channel:(device + 1) * self.channel, s_begin * self.expand:s_end * self.expand, :]
-            maxx = self.max[device, :][np.newaxis, :]
-            minn = self.min[device, :][np.newaxis, :]
-            return seq_x, seq_y, fig_x, maxx, minn, 0, 0
+            if self.model_type == 0:
+                fig_x = self.fig_data_x[device * self.channel:(device + 1) * self.channel,
+                        s_begin * self.expand:s_end * self.expand, :]
+                maxx = self.max[device, :][np.newaxis, :]
+                minn = self.min[device, :][np.newaxis, :]
+                return seq_x, seq_y, fig_x, maxx, minn, 0, 0
+            else:
+                seq_x_mark = self.data_stamp[s_begin:s_end, :]
+                seq_y_mark = self.data_stamp[r_begin:r_end, :]
+                return seq_x, seq_y, 0, 0, 0, seq_x_mark, seq_y_mark
         else:
-            seq_x_mark = self.data_stamp[s_begin:s_end, :]
-            seq_y_mark = self.data_stamp[r_begin:r_end, :]
-            return seq_x, seq_y, 0, 0, 0, seq_x_mark, seq_y_mark
+            s_begin = index
+            s_end = s_begin + self.seq_len
+            r_begin = s_end - self.label_len
+            r_end = r_begin + self.label_len + self.pred_len
+
+            seq_x = np.copy(self.data_x[s_begin:s_end])
+            seq_y = np.copy(self.data_y[s_begin:r_end])
+
+            if self.model_type == 0:
+                fig_x = self.fig_data_x[:, s_begin:s_end, :]
+                return seq_x, seq_y[-self.pred_len:, :], fig_x, self.max, self.min, 0, 0
+            else:
+                seq_x_mark = self.data_stamp[s_begin:s_end, :]
+                seq_y_mark = self.data_stamp[r_begin:r_end, :]
+                return seq_x, seq_y[-self.pred_len:, :], 0, 0, 0, seq_x_mark, seq_y_mark
 
     def __len__(self):
-        return self.data_x.shape[1] * (self.data_x.shape[0] - self.seq_len - self.pred_len) // 12
+        if 'ECW' in self.data_path:
+            return self.data_x.shape[1] * (self.data_x.shape[0] - self.seq_len - self.pred_len) // self.devide
+        else:
+            return len(self.data_x) - self.seq_len - self.pred_len + 1
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
