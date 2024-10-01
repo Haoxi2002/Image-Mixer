@@ -19,7 +19,6 @@ if __name__ == '__main__':
     parser.add_argument('--draw_test', type=int, default=1, help='draw test result')
     parser.add_argument('--task_id', type=str, default='test', help='task id')
     parser.add_argument('--model', type=str, default='Image-Mixer', help='model name')
-    parser.add_argument('--model_type', type=int, default=0, help='0 for image-based model, 1 for numerical-based model')
 
     # data loader
     parser.add_argument('--data', type=str, default='ECW_08', help='data type')
@@ -91,6 +90,7 @@ if __name__ == '__main__':
         device_ids = args.devices.split(',')
         args.device_ids = [int(id_) for id_ in device_ids]
         args.gpu = args.device_ids[0]
+    args.model_type = 0 if args.model == 'Image-Mixer' else 1  # help='0 for image-based model, 1 for numerical-based model'
     print('Args: {}'.format(args))
 
     exp = Exp_Long_Term_Forecast_VI(args)
