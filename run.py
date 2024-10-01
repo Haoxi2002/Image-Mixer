@@ -58,24 +58,24 @@ if __name__ == '__main__':
 
     # fig config
     parser.add_argument('--h', type=int, default=96, help='h')
-    parser.add_argument('--lw', type=float, default=1, help='line width')
-    parser.add_argument('--expand', type=int, default=3, help='expansion rate')
-    parser.add_argument('--lc', type=float, nargs='+', default=(0, 0, 1), help='line color')
-    parser.add_argument('--bc', type=float, nargs='+', default=(1, 1, 0), help='background color')
-    parser.add_argument('--channel', type=int, default=3, help='3 for RGB and 1 for Grey')
+    parser.add_argument('--lw', type=float, default=0.5, help='line width')
+    parser.add_argument('--expand', type=int, default=1, help='expansion rate')
+    parser.add_argument('--lc', type=float, nargs='+', default=(0, 0, 0), help='line color')
+    parser.add_argument('--bc', type=float, nargs='+', default=(1, 1, 1), help='background color')
+    parser.add_argument('--channel', type=int, default=1, help='3 for RGB and 1 for Grey')
     parser.add_argument('--hidden_dim', type=int, default=16, help='hidden dimension')
-    parser.add_argument('--patch_size', type=int, nargs='+', default=(6, 6), help='patch_size')
-    parser.add_argument('--token_mlp_dim', type=int, default=512, help='token_mlp_dim')
+    parser.add_argument('--patch_size', type=int, nargs='+', default=(8, 8), help='patch_size')
+    parser.add_argument('--token_mlp_dim', type=int, default=64, help='token_mlp_dim')
     parser.add_argument('--channel_mlp_dim', type=int, default=32, help='channel_mlp_dim')
-    parser.add_argument('--n_blocks', type=int, default=6, help='h')
-    parser.add_argument('--dropout', type=float, default=0.05, help='dropout rate')
+    parser.add_argument('--n_blocks', type=int, default=3, help='h')
+    parser.add_argument('--dropout', type=float, default=0, help='dropout rate')
 
     # optimization
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
-    parser.add_argument('--train_epochs', type=int, default=30, help='train epochs')
+    parser.add_argument('--train_epochs', type=int, default=60, help='train epochs')
     parser.add_argument('--batch_size', type=int, default=512, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='patience for early stop')
-    parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
+    parser.add_argument('--learning_rate', type=float, default=0.005, help='optimizer learning rate')
     parser.add_argument('--lradj', type=str, default='optim', help='adjust learning rate')
 
     # GPU

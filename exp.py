@@ -8,7 +8,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from data_provider.data_factory import data_provider
-from model import ImageMixer, Autoformer, DLinear, Pyraformer, MV_DTSF, TimesNet
+from model import ImageMixer, Autoformer, DLinear, Pyraformer, MV_DTSF, TimesNet, PatchTST
 from utils.metrics import MSE, MAE, metric
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 
@@ -24,7 +24,8 @@ class Exp_Long_Term_Forecast_VI(object):
             'DLinear': DLinear,
             'Pyraformer': Pyraformer,
             'MV-DTSF': MV_DTSF,
-            'TimesNet': TimesNet
+            'TimesNet': TimesNet,
+            'PatchTST': PatchTST
         }
         self.model = self._build_model().to(self.device)
 
@@ -73,15 +74,15 @@ class Exp_Long_Term_Forecast_VI(object):
 
             self.model.train()
             epoch_time = time.time()
-            for i, (seq_x, seq_y, fig_x, mu, std, seq_x_mark, seq_y_mark) in enumerate(train_loader):
+            for i, (seq_x, seq_y, fig_x, maxx, minn, seq_x_mark, seq_y_mark) in enumerate(train_loader):
                 iter_count += 1
                 seq_y = seq_y.float().to(self.device)
                 model_optim.zero_grad()
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
-                    mu = mu.float().to(self.device)
-                    std = std.float().to(self.device)
-                    y_pred = self.model(fig_x, mu, std)
+                    maxx = maxx.float().to(self.device)
+                    minn = minn.float().to(self.device)
+                    y_pred = self.model(fig_x, maxx, minn)
                 else:
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
@@ -134,13 +135,13 @@ class Exp_Long_Term_Forecast_VI(object):
         total_loss = []
         self.model.eval()
         with torch.no_grad():
-            for i, (seq_x, seq_y, fig_x, mu, std, seq_x_mark, seq_y_mark) in enumerate(val_loader):
+            for i, (seq_x, seq_y, fig_x, maxx, minn, seq_x_mark, seq_y_mark) in enumerate(val_loader):
                 seq_y = seq_y.float().to(self.device)
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
-                    mu = mu.float().to(self.device)
-                    std = std.float().to(self.device)
-                    y_pred = self.model(fig_x, mu, std)
+                    maxx = maxx.float().to(self.device)
+                    minn = minn.float().to(self.device)
+                    y_pred = self.model(fig_x, maxx, minn)
                 else:
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
@@ -170,13 +171,13 @@ class Exp_Long_Term_Forecast_VI(object):
 
         self.model.eval()
         with torch.no_grad():
-            for i, (seq_x, seq_y, fig_x, mu, std, seq_x_mark, seq_y_mark) in enumerate(test_loader):
+            for i, (seq_x, seq_y, fig_x, maxx, minn, seq_x_mark, seq_y_mark) in enumerate(test_loader):
                 seq_y = seq_y.float().to(self.device)
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
-                    mu = mu.float().to(self.device)
-                    std = std.float().to(self.device)
-                    y_pred = self.model(fig_x, mu, std)
+                    maxx = maxx.float().to(self.device)
+                    minn = minn.float().to(self.device)
+                    y_pred = self.model(fig_x, maxx, minn)
                 else:
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)

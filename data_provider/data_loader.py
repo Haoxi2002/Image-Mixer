@@ -3,9 +3,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import torch
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from torch.utils.data import Dataset
 
 
@@ -26,7 +25,7 @@ class Dataset_Basic(Dataset):
         self.features = self.args.features
         assert self.features in ['S', 'MS', 'M']
 
-        self.scaler = MinMaxScaler()
+        self.scaler = StandardScaler()
 
         self.h = self.args.h
         self.channel = self.args.channel
@@ -41,10 +40,11 @@ class Dataset_Basic(Dataset):
 
     def __read_data__(self):
         df_raw = pd.read_csv(str(os.path.join(self.dir_path, self.data_path)))
-        cols = list(df_raw.columns)
-        cols.remove(self.target)
-        cols.remove('date')
-        df_raw = df_raw[['date'] + cols + [self.target]]
+        if 'ECW' not in self.data_path:
+            cols = list(df_raw.columns)
+            cols.remove(self.target)
+            cols.remove('date')
+            df_raw = df_raw[['date'] + cols + [self.target]]
         if 'ETTh' in self.data_path:
             border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
             border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
@@ -73,39 +73,29 @@ class Dataset_Basic(Dataset):
 
         train_data = df_data[border1s[0]:border2s[0]]
         self.scaler.fit(train_data.values.reshape(-1, 1))
-        feature = df_data.shape[1]
-        data = self.scaler.transform(df_data.values.reshape(-1, 1)).reshape(-1, feature)
+        shape = df_data.values.shape
+        data = self.scaler.transform(df_data.values.reshape(-1, 1)).reshape(shape)
 
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
 
         if self.model_type == 0:
-            self.mu = np.mean(data, axis=0)[:, np.newaxis]
-            self.std = np.std(data, axis=0)[:, np.newaxis] + 1e-7
-
-            self.fig_path = os.path.join(self.dir_path, self.data_path.split('.')[0])
-            if not os.path.exists(self.fig_path):
-                os.makedirs(self.fig_path)
-            fig_name = f'{self.args.data}_{self.set_type}_h{self.h}_lw{self.lw}_lc{self.lc}_bc{self.bc}_channel{self.channel}_seq_len{self.seq_len}_ep{self.expand}_f{self.features}.npy'
-            fig_path = os.path.join(str(self.fig_path), fig_name)
-            # if os.path.exists(fig_path):
-            #     self.fig_data_x = np.load(fig_path)
-            # else:
-            self.fig_data_x = self.data2Pixel(data)[:, border1 * self.expand:border2 * self.expand, :]
-            np.save(fig_path, self.fig_data_x)
+            self.min = np.min(self.data_x, axis=0)[:, np.newaxis]
+            self.max = np.max(self.data_x, axis=0)[:, np.newaxis]
+            self.fig_data_x = self.data2Pixel(self.data_x)
         else:
             df_stamp = df_raw[['date']][border1:border2]
             df_stamp['date'] = pd.to_datetime(df_stamp.date)
-            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
-            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
-            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
-            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            df_stamp['month'] = df_stamp.date.astype(object).apply(lambda row: row.month)
+            df_stamp['day'] = df_stamp.date.astype(object).apply(lambda row: row.day)
+            df_stamp['weekday'] = df_stamp.date.astype(object).apply(lambda row: row.weekday())
+            df_stamp['hour'] = df_stamp.date.astype(object).apply(lambda row: row.hour)
             data_stamp = df_stamp.drop(columns=['date']).values
             self.data_stamp = data_stamp
 
     def data2Pixel(self, dataXIn):
         dataX = np.copy(dataXIn.T)
-        dataX = (dataX - self.mu) / self.std
+        dataX = (dataX - self.min) / (self.max - self.min)
         feature = dataX.shape[0]
         lenX = dataX.shape[1]
 
@@ -113,6 +103,7 @@ class Dataset_Basic(Dataset):
         for i in range(feature):
             canvas = FigureCanvasAgg(
                 plt.figure(figsize=(lenX * self.expand / 100, self.h * self.expand / 100), facecolor=self.bc))
+            plt.ylim(0, 1)
             plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
             plt.gca().spines['top'].set_visible(False)
             plt.gca().spines['right'].set_visible(False)
@@ -121,7 +112,6 @@ class Dataset_Basic(Dataset):
             plt.axis('off')
             plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
             plt.margins(0, 0)
-            # plt.savefig(f'fig/{self.set_type}_{i}.png')
             canvas.draw()
             buf = canvas.buffer_rgba()
             if self.channel == 1:
@@ -146,9 +136,9 @@ class Dataset_Basic(Dataset):
 
         if self.model_type == 0:
             fig_x = self.fig_data_x[device * self.channel:(device + 1) * self.channel, s_begin * self.expand:s_end * self.expand, :]
-            mu = self.mu[device, :][np.newaxis, :]
-            std = self.std[device, :][np.newaxis, :]
-            return seq_x, seq_y, fig_x, mu, std, 0, 0
+            maxx = self.max[device, :][np.newaxis, :]
+            minn = self.min[device, :][np.newaxis, :]
+            return seq_x, seq_y, fig_x, maxx, minn, 0, 0
         else:
             seq_x_mark = self.data_stamp[s_begin:s_end, :]
             seq_y_mark = self.data_stamp[r_begin:r_end, :]
