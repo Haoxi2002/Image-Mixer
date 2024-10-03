@@ -15,7 +15,6 @@ nohup python run.py \
       --d_model 512 \
       --n_heads 8 \
       --d_ff 2048 \
-      --c_out 1 \
       --dropout 0 \
       --batch_size 512 \
       --learning_rate 0.005 \
