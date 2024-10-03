@@ -11,7 +11,7 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-      --h $((288 * 3)) \
+      --h $((288 * 2)) \
       --lw 3 \
       --channel 1 \
       --hidden_dim 8 \
