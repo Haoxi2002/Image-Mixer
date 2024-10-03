@@ -51,5 +51,5 @@ class Model(nn.Module):
         x = self.linear3(x)
         x = einops.rearrange(x, 'b f l -> b l f')
 
-        x = x * (maxx - minn) + minn
+        # x = x * (maxx - minn) + minn
         return x.float()
