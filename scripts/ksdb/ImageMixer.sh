@@ -23,4 +23,4 @@ nohup python run.py \
       --batch_size 512 \
       --learning_rate 0.005 \
       --use_multi_gpu \
-      > ksdb_ImageMixer_new.txt 2>&1 &
+      > ksdb_ImageMixer.txt 2>&1 &
