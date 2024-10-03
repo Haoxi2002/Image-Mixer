@@ -11,8 +11,8 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-      --h $((288 * 2)) \
-      --lw 4 \
+      --h $((288 * 3)) \
+      --lw 3 \
       --channel 1 \
       --hidden_dim 8 \
       --patch_size 24 24 \
@@ -23,4 +23,4 @@ nohup python run.py \
       --batch_size 512 \
       --learning_rate 0.005 \
       --use_multi_gpu \
-      > ksdb_ImageMixer.txt 2>&1 &
+      > ksdb_ImageMixer_new.txt 2>&1 &

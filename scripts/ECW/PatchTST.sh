@@ -12,7 +12,7 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-      --d_model 512 \
+      --d_model 128 \
       --n_heads 8 \
       --d_ff 2048 \
       --dropout 0 \
