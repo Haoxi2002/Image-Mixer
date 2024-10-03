@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -87,7 +88,8 @@ class Dataset_Basic(Dataset):
             data_stamp = df_stamp.drop(columns=['date']).values
             self.data_stamp = data_stamp
 
-    def data2Pixel(self, dataXIn):
+    def data2Pixel(self, dataXIn, type='matplotlib'):
+        assert type in ['matplotlib', 'sampling']
         dataX = np.copy(dataXIn.T)
         dataX = (dataX - self.min) / (self.max - self.min)
         feature = dataX.shape[0]
@@ -95,26 +97,40 @@ class Dataset_Basic(Dataset):
 
         imgX = np.zeros([feature * self.channel, lenX * self.expand, self.h * self.expand])
         for i in range(feature):
-            canvas = FigureCanvasAgg(
-                plt.figure(figsize=(lenX * self.expand / 100, self.h * self.expand / 100), facecolor=self.bc))
-            plt.ylim(0, 1)
-            plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
-            plt.gca().spines['top'].set_visible(False)
-            plt.gca().spines['right'].set_visible(False)
-            plt.gca().spines['bottom'].set_visible(False)
-            plt.gca().spines['left'].set_visible(False)
-            plt.axis('off')
-            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
-            plt.margins(0, 0)
-            canvas.draw()
-            buf = canvas.buffer_rgba()
-            if self.channel == 1:
-                img = np.dot(np.asarray(buf)[:, :, :3] / 255, [0.2989, 0.5870, 0.1140])
-                imgX[i, :img.shape[1], :] = img.T
-            else:  # self.channel == 3:
-                img = np.asarray(buf)[:, :, :3] / 255
-                imgX[i * self.channel:(i + 1) * self.channel, :img.shape[1], :] = np.transpose(img, (2, 1, 0))
-            plt.close()
+            if type == 'matplotlib':
+                canvas = FigureCanvasAgg(
+                    plt.figure(figsize=(lenX * self.expand / 100, self.h * self.expand / 100), facecolor=self.bc))
+                plt.ylim(0, 1)
+                plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
+                plt.gca().spines['top'].set_visible(False)
+                plt.gca().spines['right'].set_visible(False)
+                plt.gca().spines['bottom'].set_visible(False)
+                plt.gca().spines['left'].set_visible(False)
+                plt.axis('off')
+                plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+                plt.margins(0, 0)
+                canvas.draw()
+                buf = canvas.buffer_rgba()
+                if self.channel == 1:
+                    img = np.dot(np.asarray(buf)[:, :, :3] / 255, [0.2989, 0.5870, 0.1140])
+                    imgX[i, :img.shape[1], :] = img.T
+                else:  # self.channel == 3:
+                    img = np.asarray(buf)[:, :, :3] / 255
+                    imgX[i * self.channel:(i + 1) * self.channel, :img.shape[1], :] = np.transpose(img, (2, 1, 0))
+                plt.close()
+            else:  # type == 'sampling'
+                img = (np.ones((self.h * self.expand, lenX * self.expand, 3), dtype=np.uint8) * (
+                    int(self.bc[0] * 255), int(self.bc[1] * 255), int(self.bc[2] * 255))).astype(np.uint8)
+                data_line = 1 - dataX[i]
+                data_line = np.round(data_line * (self.h - 1)).astype(int)
+                for j in range(self.expand):
+                    img[np.repeat(data_line, self.expand) * self.expand + j, np.arange(len(data_line) * self.expand),
+                    :] = (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255))
+                if self.channel == 1:
+                    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    imgX[i, :gray_img.shape[1], :] = np.transpose(np.expand_dims(gray_img, axis=0) / 255, (0, 2, 1))
+                else:  # self.channel == 3:
+                    imgX[i * self.channel:(i + 1) * self.channel, :, :] = np.transpose(img / 255, (2, 1, 0))
         return imgX
 
     def __getitem__(self, index):

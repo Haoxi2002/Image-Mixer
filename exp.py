@@ -19,7 +19,7 @@ class Exp_Long_Term_Forecast_VI(object):
         self.device = self._acquire_device()
         self.model_type = self.args.model_type
         self.model_dict = {
-            'Image-Mixer': ImageMixer,
+            'ImageMixer': ImageMixer,
             'Autoformer': Autoformer,
             'DLinear': DLinear,
             'Pyraformer': Pyraformer,
