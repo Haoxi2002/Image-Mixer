@@ -15,7 +15,7 @@ nohup python run.py \
       --lw 3 \
       --channel 1 \
       --hidden_dim 8 \
-      --patch_size 24 24 \
+      --patch_size 32 32 \
       --token_mlp_dim 512 \
       --channel_mlp_dim 16 \
       --n_blocks 2 \

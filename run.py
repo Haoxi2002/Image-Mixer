@@ -11,6 +11,8 @@ if __name__ == '__main__':
     np.random.seed(fix_seed)
     torch.manual_seed(fix_seed)
     random.seed(fix_seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
     parser = argparse.ArgumentParser(description='Multimodal TSF')
 

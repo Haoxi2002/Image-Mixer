@@ -112,7 +112,8 @@ class Dataset_Basic(Dataset):
                 canvas.draw()
                 buf = canvas.buffer_rgba()
                 if self.channel == 1:
-                    img = np.dot(np.asarray(buf)[:, :, :3] / 255, [0.2989, 0.5870, 0.1140])
+                    # img = np.dot(np.asarray(buf)[:, :, :3] / 255, [0.2989, 0.5870, 0.1140])
+                    img = cv2.cvtColor(np.asarray(buf)[:, :, :3], cv2.COLOR_BGR2GRAY) / 255
                     imgX[i, :img.shape[1], :] = img.T
                 else:  # self.channel == 3:
                     img = np.asarray(buf)[:, :, :3] / 255
