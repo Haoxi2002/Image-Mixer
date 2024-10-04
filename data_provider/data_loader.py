@@ -25,10 +25,7 @@ class Dataset_Basic(Dataset):
         self.target = self.args.target
         self.features = self.args.features
         assert self.features in ['S', 'MS', 'M']
-        if 'ECW' not in self.data_path:
-            self.scaler = StandardScaler()
-        else:
-            self.scaler = MinMaxScaler()
+        self.scaler = StandardScaler()
 
         self.h = self.args.h
         self.channel = self.args.channel
@@ -93,7 +90,6 @@ class Dataset_Basic(Dataset):
     def data2Pixel(self, dataXIn, type='matplotlib'):
         assert type in ['matplotlib', 'sampling']
         dataX = np.copy(dataXIn.T)
-        dataX = (dataX - self.min) / (self.max - self.min)
         feature = dataX.shape[0]
         lenX = dataX.shape[1]
 
@@ -102,7 +98,6 @@ class Dataset_Basic(Dataset):
             if type == 'matplotlib':
                 canvas = FigureCanvasAgg(
                     plt.figure(figsize=(lenX * self.expand / 100, self.h * self.expand / 100), facecolor=self.bc))
-                plt.ylim(0, 1)
                 plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
                 plt.gca().spines['top'].set_visible(False)
                 plt.gca().spines['right'].set_visible(False)
