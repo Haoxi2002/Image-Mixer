@@ -74,13 +74,15 @@ class Exp_Long_Term_Forecast_VI(object):
 
             self.model.train()
             epoch_time = time.time()
-            for i, (seq_x, seq_y, fig_x, seq_x_mark, seq_y_mark) in enumerate(train_loader):
+            for i, (seq_x, seq_y, fig_x, maxx, minn, seq_x_mark, seq_y_mark) in enumerate(train_loader):
                 iter_count += 1
                 seq_y = seq_y.float().to(self.device)
                 model_optim.zero_grad()
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
-                    y_pred = self.model(fig_x)
+                    maxx = maxx.float().to(self.device)
+                    minn = minn.float().to(self.device)
+                    y_pred = self.model(fig_x, maxx, minn)
                 else:
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
@@ -133,11 +135,13 @@ class Exp_Long_Term_Forecast_VI(object):
         total_loss = []
         self.model.eval()
         with torch.no_grad():
-            for i, (seq_x, seq_y, fig_x, seq_x_mark, seq_y_mark) in enumerate(val_loader):
+            for i, (seq_x, seq_y, fig_x, maxx, minn, seq_x_mark, seq_y_mark) in enumerate(val_loader):
                 seq_y = seq_y.float().to(self.device)
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
-                    y_pred = self.model(fig_x)
+                    maxx = maxx.float().to(self.device)
+                    minn = minn.float().to(self.device)
+                    y_pred = self.model(fig_x, maxx, minn)
                 else:
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
@@ -167,11 +171,13 @@ class Exp_Long_Term_Forecast_VI(object):
 
         self.model.eval()
         with torch.no_grad():
-            for i, (seq_x, seq_y, fig_x, seq_x_mark, seq_y_mark) in enumerate(test_loader):
+            for i, (seq_x, seq_y, fig_x, maxx, minn, seq_x_mark, seq_y_mark) in enumerate(test_loader):
                 seq_y = seq_y.float().to(self.device)
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
-                    y_pred = self.model(fig_x)
+                    maxx = maxx.float().to(self.device)
+                    minn = minn.float().to(self.device)
+                    y_pred = self.model(fig_x, maxx, minn)
                 else:
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)

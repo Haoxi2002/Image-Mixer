@@ -25,10 +25,8 @@ class Dataset_Basic(Dataset):
         self.target = self.args.target
         self.features = self.args.features
         assert self.features in ['S', 'MS', 'M']
-        if 'ECW' in self.data_path:
-            self.scaler = MinMaxScaler()
-        else:  # PPIO dataset
-            self.scaler = StandardScaler()
+
+        self.scaler = MinMaxScaler()
 
         self.h = self.args.h
         self.channel = self.args.channel
@@ -77,6 +75,8 @@ class Dataset_Basic(Dataset):
         self.data_y = data[border1:border2]
 
         if self.model_type == 0:
+            self.min = np.min(self.data_x, axis=0)[:, np.newaxis]
+            self.max = np.max(self.data_x, axis=0)[:, np.newaxis]
             self.fig_data_x = self.data2Pixel(self.data_x)
         else:
             df_stamp = df_raw[['date']][border1:border2]
@@ -91,6 +91,7 @@ class Dataset_Basic(Dataset):
     def data2Pixel(self, dataXIn, type='matplotlib'):
         assert type in ['matplotlib', 'sampling']
         dataX = np.copy(dataXIn.T)
+        dataX = (dataX - self.min) / (self.max - self.min)
         feature = dataX.shape[0]
         lenX = dataX.shape[1]
 
@@ -99,7 +100,7 @@ class Dataset_Basic(Dataset):
             if type == 'matplotlib':
                 canvas = FigureCanvasAgg(
                     plt.figure(figsize=(lenX * self.expand / 100, self.h * self.expand / 100), facecolor=self.bc))
-                # plt.ylim(0, 1)
+                plt.ylim(0, 1)
                 plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
                 plt.gca().spines['top'].set_visible(False)
                 plt.gca().spines['right'].set_visible(False)
@@ -146,12 +147,15 @@ class Dataset_Basic(Dataset):
             seq_y = self.data_y[r_begin:r_end, device][:, np.newaxis]
 
             if self.model_type == 0:
-                fig_x = self.fig_data_x[device * self.channel:(device + 1) * self.channel, s_begin * self.expand:s_end * self.expand, :]
-                return seq_x, seq_y, fig_x, 0, 0
+                fig_x = self.fig_data_x[device * self.channel:(device + 1) * self.channel,
+                        s_begin * self.expand:s_end * self.expand, :]
+                maxx = self.max[device, :][np.newaxis, :]
+                minn = self.min[device, :][np.newaxis, :]
+                return seq_x, seq_y, fig_x, maxx, minn, 0, 0
             else:
                 seq_x_mark = self.data_stamp[s_begin:s_end, :]
                 seq_y_mark = self.data_stamp[r_begin:r_end, :]
-                return seq_x, seq_y, 0, seq_x_mark, seq_y_mark
+                return seq_x, seq_y, 0, 0, 0, seq_x_mark, seq_y_mark
         else:
             s_begin = index
             s_end = s_begin + self.seq_len
@@ -163,11 +167,11 @@ class Dataset_Basic(Dataset):
 
             if self.model_type == 0:
                 fig_x = self.fig_data_x[:, s_begin:s_end, :]
-                return seq_x, seq_y[-self.pred_len:, :], fig_x, 0, 0
+                return seq_x, seq_y[-self.pred_len:, :], fig_x, self.max, self.min, 0, 0
             else:
                 seq_x_mark = self.data_stamp[s_begin:s_end, :]
                 seq_y_mark = self.data_stamp[r_begin:r_end, :]
-                return seq_x, seq_y[-self.pred_len:, :], 0, seq_x_mark, seq_y_mark
+                return seq_x, seq_y[-self.pred_len:, :], 0, 0, 0, seq_x_mark, seq_y_mark
 
     def __len__(self):
         if 'ECW' in self.data_path:
