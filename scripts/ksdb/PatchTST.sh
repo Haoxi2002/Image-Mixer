@@ -12,7 +12,7 @@ nohup python run.py \
       --label_len 144 \
       --pred_len 288  \
       --d_model 64 \
-      --n_heads 6 \
+      --n_heads 2 \
       --d_ff 2048 \
       --dropout 0 \
       --batch_size 512 \
