@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from torch.utils.data import Dataset
 
 
@@ -25,8 +25,10 @@ class Dataset_Basic(Dataset):
         self.target = self.args.target
         self.features = self.args.features
         assert self.features in ['S', 'MS', 'M']
-
-        self.scaler = StandardScaler()
+        if 'ECW' in self.data_path:
+            self.scaler = MinMaxScaler()
+        else:  # PPIO dataset
+            self.scaler = StandardScaler()
 
         self.h = self.args.h
         self.channel = self.args.channel
