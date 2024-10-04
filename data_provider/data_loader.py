@@ -91,7 +91,6 @@ class Dataset_Basic(Dataset):
     def data2Pixel(self, dataXIn, type='matplotlib'):
         assert type in ['matplotlib', 'sampling']
         dataX = np.copy(dataXIn.T)
-        # dataX = (dataX - self.min) / (self.max - self.min)
         feature = dataX.shape[0]
         lenX = dataX.shape[1]
 
