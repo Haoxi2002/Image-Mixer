@@ -174,3 +174,6 @@ RES/
 /result_long_term_forecast.csv
 /result_long_term_forecast.txt
 /results.xlsx
+cal.py
+run_ECW.py
+run_PPIO.py
