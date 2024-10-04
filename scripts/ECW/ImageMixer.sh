@@ -2,7 +2,7 @@
 
 nohup python run.py \
       --is_training 1 \
-      --task_id ECW_08_ImageMixer \
+      --task_id ECW_08_ImageMixer_best \
       --model ImageMixer \
       --data ECW \
       --dir_path ./data/ECW \
@@ -22,6 +22,6 @@ nohup python run.py \
       --n_blocks 3 \
       --dropout 0 \
       --batch_size 512 \
-      --learning_rate 0.005 \
+      --learning_rate 0.1 \
       --use_multi_gpu \
-      > ECW_08_ImageMixer.txt 2>&1 &
+      > ECW_08_ImageMixer_best.txt 2>&1 &

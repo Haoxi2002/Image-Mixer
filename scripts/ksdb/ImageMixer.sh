@@ -2,7 +2,7 @@
 
 nohup python run.py \
       --is_training 1 \
-      --task_id ksdb_ImageMixer \
+      --task_id ksdb_ImageMixer_best \
       --model ImageMixer \
       --data ksdb \
       --dir_path ./data/PPIO \
@@ -23,4 +23,4 @@ nohup python run.py \
       --batch_size 512 \
       --learning_rate 0.005 \
       --use_multi_gpu \
-      > ksdb_ImageMixer.txt 2>&1 &
+      > ksdb_ImageMixer_best.txt 2>&1 &
