@@ -25,8 +25,10 @@ class Dataset_Basic(Dataset):
         self.target = self.args.target
         self.features = self.args.features
         assert self.features in ['S', 'MS', 'M']
-
-        self.scaler = MinMaxScaler()
+        if 'ECW' not in self.data_path:
+            self.scaler = StandardScaler()
+        else:
+            self.scaler = MinMaxScaler()
 
         self.h = self.args.h
         self.channel = self.args.channel
