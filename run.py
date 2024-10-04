@@ -23,9 +23,9 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
 
     # data loader
-    parser.add_argument('--data', type=str, default='ksdb', help='data type')
-    parser.add_argument('--dir_path', type=str, default='./data/PPIO', help='dir path')
-    parser.add_argument('--data_path', type=str, default='ksdb.csv', help='data file name')
+    parser.add_argument('--data', type=str, default='ECW', help='data type')
+    parser.add_argument('--dir_path', type=str, default='./data/ECW', help='dir path')
+    parser.add_argument('--data_path', type=str, default='ECW_08.csv', help='data file name')
     parser.add_argument('--features', type=str, default='S',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='mps', help='target feature in S or MS task')
@@ -34,9 +34,9 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
 
     # forecasting task
-    parser.add_argument('--seq_len', type=int, default=288, help='input sequence length')
-    parser.add_argument('--label_len', type=int, default=144, help='start token length')
-    parser.add_argument('--pred_len', type=int, default=288, help='prediction sequence length')
+    parser.add_argument('--seq_len', type=int, default=48, help='input sequence length')
+    parser.add_argument('--label_len', type=int, default=24, help='start token length')
+    parser.add_argument('--pred_len', type=int, default=24, help='prediction sequence length')
     parser.add_argument('--inverse', action='store_true', default=False, help='inverse output data')
 
     # numerical config
@@ -58,21 +58,21 @@ if __name__ == '__main__':
     parser.add_argument('--output_attention', action='store_true', help='whether to output attention in ecoder')
 
     # fig config
-    parser.add_argument('--h', type=int, default=288 * 2, help='h')
-    parser.add_argument('--lw', type=float, default=4, help='line width')
+    parser.add_argument('--h', type=int, default=96, help='h')
+    parser.add_argument('--lw', type=float, default=0.5, help='line width')
     parser.add_argument('--expand', type=int, default=1, help='expansion rate')
     parser.add_argument('--lc', type=float, nargs='+', default=(0, 0, 0), help='line color')
     parser.add_argument('--bc', type=float, nargs='+', default=(1, 1, 1), help='background color')
     parser.add_argument('--channel', type=int, default=1, help='3 for RGB and 1 for Grey')
-    parser.add_argument('--hidden_dim', type=int, default=8, help='hidden dimension')
-    parser.add_argument('--patch_size', type=int, nargs='+', default=(24, 24), help='patch_size')
+    parser.add_argument('--hidden_dim', type=int, default=16, help='hidden dimension')
+    parser.add_argument('--patch_size', type=int, nargs='+', default=(8, 8), help='patch_size')
     parser.add_argument('--token_mlp_dim', type=int, default=512, help='token_mlp_dim')
-    parser.add_argument('--channel_mlp_dim', type=int, default=16, help='channel_mlp_dim')
+    parser.add_argument('--channel_mlp_dim', type=int, default=32, help='channel_mlp_dim')
     parser.add_argument('--n_blocks', type=int, default=2, help='block numbers of backbone')
 
     # optimization
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
-    parser.add_argument('--train_epochs', type=int, default=30, help='train epochs')
+    parser.add_argument('--train_epochs', type=int, default=1, help='train epochs')
     parser.add_argument('--batch_size', type=int, default=512, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='patience for early stop')
     parser.add_argument('--dropout', type=float, default=0.05, help='dropout rate')
