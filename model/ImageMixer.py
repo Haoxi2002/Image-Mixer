@@ -24,7 +24,7 @@ class Model(nn.Module):
         seq_y: (batch_size, pred_len, features)   
     """
 
-    def forward(self, x, maxx, minn):
+    def forward(self, x):
 
         bc, f_c, l, h = x.shape
         # CI
@@ -51,5 +51,4 @@ class Model(nn.Module):
         x = self.linear3(x)
         x = einops.rearrange(x, 'b f l -> b l f')
 
-        # x = x * (maxx - minn) + minn
         return x.float()
