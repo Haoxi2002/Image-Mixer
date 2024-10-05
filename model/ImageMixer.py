@@ -15,7 +15,7 @@ class Model(nn.Module):
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.linear1 = nn.Linear(args.hidden_dim, 1)
         self.linear2 = nn.Linear(self.token_dim, args.pred_len)
-        self.linear3 = MlpBlock(args.pred_len, args.pred_len * 2, 0)
+        self.linear3 = MlpBlock(args.pred_len, args.pred_len * 2, args.dropout)
 
     """
     input:    
@@ -29,6 +29,8 @@ class Model(nn.Module):
         bc, f_c, l, h = x.shape
         # CI
         x = torch.reshape(x, (-1, self.args.channel, x.shape[2], x.shape[3]))
+        mean = torch.reshape(mean, (-1, 1, 1))
+        std = torch.reshape(std, (-1, 1, 1))
 
         # encoder
         x = self.conv_embedding(x.float())
@@ -45,14 +47,15 @@ class Model(nn.Module):
         x = self.linear2(x)
         x = einops.rearrange(x, 'b f l -> b l f')  # b=batch_size f=features l=pred_len
 
-        # de CI
-        x = torch.transpose(x, 1, 2)
-        x = torch.reshape(x, (bc, f_c // self.args.channel, self.args.pred_len))
-        x = torch.transpose(x, 1, 2)
+        x = x * std + mean
 
         x = einops.rearrange(x, 'b l f -> b f l')
         x = self.linear3(x)
         x = einops.rearrange(x, 'b f l -> b l f')
 
-        x = x * std + mean
+        # de CI
+        x = torch.transpose(x, 1, 2)
+        x = torch.reshape(x, (bc, f_c // self.args.channel, self.args.pred_len))
+        x = torch.transpose(x, 1, 2)
+
         return x.float()

@@ -14,10 +14,10 @@ nohup python run.py \
       --h $((288 * 2)) \
       --lw 3 \
       --channel 1 \
-      --hidden_dim 8 \
+      --hidden_dim 16 \
       --patch_size 36 36 \
       --token_mlp_dim 256 \
-      --channel_mlp_dim 16 \
+      --channel_mlp_dim 32 \
       --n_blocks 4 \
       --dropout 0.001 \
       --batch_size 512 \
