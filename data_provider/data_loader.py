@@ -75,6 +75,7 @@ class Dataset_Basic(Dataset):
 
         if self.model_type == 0:
             self.mean = np.mean(self.data_x, axis=0)[:, np.newaxis]
+            self.std = np.std(self.data_x, axis=0)[:, np.newaxis]
             self.fig_data_x = self.data2Pixel(self.data_x)
         else:
             df_stamp = df_raw[['date']][border1:border2]
@@ -146,11 +147,12 @@ class Dataset_Basic(Dataset):
                 fig_x = self.fig_data_x[device * self.channel:(device + 1) * self.channel,
                         s_begin * self.expand:s_end * self.expand, :]
                 mean = self.mean[device, :][np.newaxis, :]
-                return seq_x, seq_y, fig_x, mean, 0, 0
+                std = self.std[device, :][np.newaxis, :]
+                return seq_x, seq_y, fig_x, mean, std, 0, 0
             else:
                 seq_x_mark = self.data_stamp[s_begin:s_end, :]
                 seq_y_mark = self.data_stamp[r_begin:r_end, :]
-                return seq_x, seq_y, 0, 0, seq_x_mark, seq_y_mark
+                return seq_x, seq_y, 0, 0, 0, seq_x_mark, seq_y_mark
         else:
             s_begin = index
             s_end = s_begin + self.seq_len
@@ -162,11 +164,11 @@ class Dataset_Basic(Dataset):
 
             if self.model_type == 0:
                 fig_x = self.fig_data_x[:, s_begin:s_end, :]
-                return seq_x, seq_y[-self.pred_len:, :], fig_x, self.mean, 0, 0
+                return seq_x, seq_y[-self.pred_len:, :], fig_x, self.mean, self.std, 0, 0
             else:
                 seq_x_mark = self.data_stamp[s_begin:s_end, :]
                 seq_y_mark = self.data_stamp[r_begin:r_end, :]
-                return seq_x, seq_y[-self.pred_len:, :], 0, 0, seq_x_mark, seq_y_mark
+                return seq_x, seq_y[-self.pred_len:, :], 0, 0, 0, seq_x_mark, seq_y_mark
 
     def __len__(self):
         if 'ECW' in self.data_path:
