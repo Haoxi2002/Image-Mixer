@@ -12,7 +12,7 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-      --h 96 \
+      --h $((48 * 2)) \
       --lw 0.5 \
       --channel 1 \
       --hidden_dim 16 \
@@ -22,6 +22,6 @@ nohup python run.py \
       --n_blocks 4 \
       --dropout 0 \
       --batch_size 512 \
-      --learning_rate 0.1 \
+      --learning_rate 0.005 \
       --use_multi_gpu \
       > ECW_08_ImageMixer.txt 2>&1 &
