@@ -13,9 +13,9 @@ class Model(nn.Module):
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
         self.blocks = nn.ModuleList([MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _ in range(args.n_blocks)])
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
-        self.linear1 = nn.Linear(args.hidden_dim, 1)
-        self.linear2 = nn.Linear(self.token_dim, args.pred_len)
-        self.linear3 = MlpBlock(args.pred_len, args.pred_len * 2, args.dropout)
+        self.flatten = nn.Flatten(start_dim=-2)
+        self.linear = nn.Linear(self.token_dim * args.hidden_dim, args.pred_len)
+        self.dropout = nn.Dropout(args.dropout)
 
     """
     input:    
@@ -40,18 +40,11 @@ class Model(nn.Module):
         for l in self.blocks:
             x = l(x)
 
-        # decoder
-        x = self.head_layer_norm(x)  # (b, p, c)  b=batch_size p=patches c=channel
-        x = self.linear1(x)
-        x = einops.rearrange(x, 'b p f -> b f p')  # b=batch_size f=features p=patches
-        x = self.linear2(x)
-        x = einops.rearrange(x, 'b f l -> b l f')  # b=batch_size f=features l=pred_len
-
+        # decoder (b, p, c)  b=batch_size p=patches c=channel
+        x = torch.unsqueeze(self.flatten(x), 1)
         x = x * std + mean
-
-        x = einops.rearrange(x, 'b l f -> b f l')
-        x = self.linear3(x)
-        x = einops.rearrange(x, 'b f l -> b l f')
+        x = self.linear(x)
+        x = self.dropout(x)
 
         # de CI
         x = torch.transpose(x, 1, 2)
