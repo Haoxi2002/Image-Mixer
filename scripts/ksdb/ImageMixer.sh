@@ -19,7 +19,7 @@ nohup python run.py \
       --token_mlp_dim 256 \
       --channel_mlp_dim 16 \
       --n_blocks 4 \
-      --dropout 0 \
+      --dropout 0.001 \
       --batch_size 512 \
       --learning_rate 0.005 \
       --use_multi_gpu \

@@ -11,11 +11,11 @@ class Model(nn.Module):
         self.args = args
         self.token_dim = (args.seq_len * args.expand // args.patch_size[0]) * (args.h * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
-        self.blocks = nn.ModuleList([MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim) for _ in range(args.n_blocks)])
+        self.blocks = nn.ModuleList([MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _ in range(args.n_blocks)])
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.linear1 = nn.Linear(args.hidden_dim, 1)
         self.linear2 = nn.Linear(self.token_dim, args.pred_len)
-        self.linear3 = MlpBlock(args.pred_len, args.pred_len * 2)
+        self.linear3 = MlpBlock(args.pred_len, args.pred_len * 2, 0)
 
     """
     input:    
