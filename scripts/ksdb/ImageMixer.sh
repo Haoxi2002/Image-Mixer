@@ -19,8 +19,8 @@ nohup python run.py \
       --token_mlp_dim 256 \
       --channel_mlp_dim 32 \
       --n_blocks 4 \
-      --dropout 0.001 \
+      --dropout 0 \
       --batch_size 512 \
-      --learning_rate 0.005 \
+      --learning_rate 0.0001 \
       --use_multi_gpu \
       > ksdb_ImageMixer.txt 2>&1 &

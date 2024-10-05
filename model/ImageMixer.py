@@ -15,7 +15,6 @@ class Model(nn.Module):
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.flatten = nn.Flatten(start_dim=-2)
         self.linear = nn.Linear(self.token_dim * args.hidden_dim, args.pred_len)
-        self.dropout = nn.Dropout(args.dropout)
 
     """
     input:    
@@ -44,7 +43,6 @@ class Model(nn.Module):
         x = torch.unsqueeze(self.flatten(x), 1)
         x = x * std + mean
         x = self.linear(x)
-        x = self.dropout(x)
 
         # de CI
         x = torch.transpose(x, 1, 2)
