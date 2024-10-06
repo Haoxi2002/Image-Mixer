@@ -20,17 +20,19 @@ class Model(nn.Module):
         self.model = DeepLab(num_classes=1, backbone="mobilenet", pretrained=False, downsample_factor=16, image_C=1,
                              dropout=args.dropout, args=args)
         self.conv = nn.Conv2d(in_channels=args.channel, out_channels=1, kernel_size=args.expand, padding=0, bias=False, stride=args.expand)
+        self.EMD = nn.Softmax(dim=-1)
         self.expand = args.expand
-        self.fc1 = nn.Linear(args.h, 1)
-        self.fc2 = nn.Linear(args.seq_len, args.pred_len)
+        self.flatten = nn.Flatten(start_dim=-2)
+        self.linear = nn.Linear(args.seq_len * args.expand * args.seq_len * 2 * args.expand, args.pred_len)
 
-    def forward(self, x, mu, std):
+    def forward(self, x, mean, std):
         bs, c, w, h = x.shape
         x = x.view(bs * c, 1, w, h)
         x = self.model(x)
         x = x.view(bs, c, w, h)
         x = self.conv(x)
-        indx = self.fc1(x).reshape(bs, 1, -1)
-        indx = self.fc2(indx)
-        indx = indx.permute(0, 2, 1)
+        x = self.flatten(x)
+        x = self.linear(x)
+        x = torch.transpose(x, -1, -2)
+        x = x * std + mean
         return x
