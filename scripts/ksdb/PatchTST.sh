@@ -16,6 +16,6 @@ nohup python run.py \
       --d_ff 2048 \
       --dropout 0 \
       --batch_size 512 \
-      --learning_rate 0.005 \
+      --learning_rate 0.001 \
       --use_multi_gpu \
       > ksdb_PatchTST.txt 2>&1 &
