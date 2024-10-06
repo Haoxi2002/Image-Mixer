@@ -11,7 +11,7 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-      --d_model 128 \
+      --d_model 256 \
       --n_heads 2 \
       --d_ff 2048 \
       --dropout 0 \

@@ -13,7 +13,7 @@ nohup python run.py \
       --pred_len 24  \
 		  --inverse \
       --d_model 64 \
-      --n_heads 8 \
+      --n_heads 4 \
       --d_ff 2048 \
       --dropout 0.01 \
       --batch_size 512 \
