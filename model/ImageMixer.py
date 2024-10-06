@@ -34,15 +34,16 @@ class Model(nn.Module):
         # encoder
         x = self.conv_embedding(x.float())
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
+        x = x * std + mean
 
         # backbone
         for l in self.blocks:
             x = l(x)
 
         # decoder (b, p, c)  b=batch_size p=patches c=channel
-        x = torch.unsqueeze(self.flatten(x), 1)
-        x = x * std + mean
+        x = self.flatten(x)
         x = self.linear(x)
+        x = torch.unsqueeze(x, dim=-1)
 
         # de CI
         x = torch.transpose(x, 1, 2)

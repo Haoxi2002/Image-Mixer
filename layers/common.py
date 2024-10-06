@@ -23,18 +23,18 @@ class MixerBlock(nn.Module):
     def __init__(self, hidden_dim, token_dim, token_mlp_dim, channel_mlp_dim, dropout):
         super(MixerBlock, self).__init__()
         self.layer_norm_1 = nn.LayerNorm(hidden_dim)
-        self.mlp_token = MlpBlock(token_dim, token_mlp_dim, dropout)
+        self.token_mlp = MlpBlock(token_dim, token_mlp_dim, dropout)
         self.layer_norm_2 = nn.LayerNorm(hidden_dim)
-        self.mlp_channel = MlpBlock(hidden_dim, channel_mlp_dim, dropout)
+        self.channel_mlp = MlpBlock(hidden_dim, channel_mlp_dim, dropout)
 
     def forward(self, x):
         y = self.layer_norm_1(x)  # (bs, patches, c)
         y = torch.transpose(y, -1, -2)  # (bs, c, patches)
-        y = self.mlp_token(y)
+        y = self.token_mlp(y)
         y = torch.transpose(y, -1, -2)
         x = x + y  # (bs, patches, c)
         y = self.layer_norm_2(x)
-        y = self.mlp_channel(y)
+        y = self.channel_mlp(y)
         x = x + y
 
         return x
