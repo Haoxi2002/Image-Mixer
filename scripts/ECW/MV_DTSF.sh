@@ -12,8 +12,8 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-      --h 288 * 2 \
-      --lw 4 \
+      --h $((48 * 2)) \
+      --lw 0.5 \
       --channel 1 \
       --hidden_dim 8 \
       --patch_size 24 24 \
