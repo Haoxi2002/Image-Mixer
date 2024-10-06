@@ -15,7 +15,7 @@ nohup python run.py \
       --n_heads 2 \
       --d_ff 2048 \
       --dropout 0 \
-      --batch_size 512 \
+      --batch_size 256 \
       --learning_rate 0.005 \
       --use_multi_gpu \
       > ksdb_TimesNet.txt 2>&1 &
