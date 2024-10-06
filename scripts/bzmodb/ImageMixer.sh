@@ -12,15 +12,15 @@ nohup python run.py \
       --label_len 144 \
       --pred_len 288  \
       --h $((288 * 2)) \
-      --lw 4 \
+      --lw 3 \
       --channel 1 \
-      --hidden_dim 8 \
-      --patch_size 24 24 \
-      --token_mlp_dim 512 \
-      --channel_mlp_dim 16 \
+      --hidden_dim 4 \
+      --patch_size 36 36 \
+      --token_mlp_dim 256 \
+      --channel_mlp_dim 8 \
       --n_blocks 2 \
       --dropout 0 \
       --batch_size 512 \
-      --learning_rate 0.005 \
+      --learning_rate 0.001 \
       --use_multi_gpu \
       > bzmodb_ImageMixer.txt 2>&1 &
