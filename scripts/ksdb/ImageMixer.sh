@@ -18,7 +18,7 @@ nohup python run.py \
       --patch_size 36 36 \
       --token_mlp_dim 256 \
       --channel_mlp_dim 32 \
-      --n_blocks 4 \
+      --n_blocks 2 \
       --dropout 0 \
       --batch_size 512 \
       --learning_rate 0.005 \
