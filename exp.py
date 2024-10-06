@@ -23,7 +23,7 @@ class Exp_Long_Term_Forecast_VI(object):
             'Autoformer': Autoformer,
             'DLinear': DLinear,
             'Pyraformer': Pyraformer,
-            'MV-DTSF': MV_DTSF,
+            'MV_DTSF': MV_DTSF,
             'TimesNet': TimesNet,
             'PatchTST': PatchTST
         }
