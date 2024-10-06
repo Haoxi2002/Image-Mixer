@@ -92,7 +92,7 @@ if __name__ == '__main__':
         device_ids = args.devices.split(',')
         args.device_ids = [int(id_) for id_ in device_ids]
         args.gpu = args.device_ids[0]
-    args.model_type = 0 if args.model == 'ImageMixer' else 1  # help='0 for image-based model, 1 for numerical-based model'
+    args.model_type = 0 if args.model == 'ImageMixer' or args.model == 'MV-DTSF' else 1  # help='0 for image-based model, 1 for numerical-based model'
     print('Args: {}'.format(args))
 
     exp = Exp_Long_Term_Forecast_VI(args)
