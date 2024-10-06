@@ -33,5 +33,4 @@ class Model(nn.Module):
         indx = self.fc1(x).reshape(bs, 1, -1)
         indx = self.fc2(indx)
         indx = indx.permute(0, 2, 1)
-        x = indx * std + mu
         return x
