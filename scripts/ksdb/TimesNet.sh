@@ -7,7 +7,7 @@ nohup python run.py \
       --data ksdb \
       --dir_path ./data/PPIO \
       --data_path ksdb.csv \
-      --freq 5min \
+      --freq h \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
