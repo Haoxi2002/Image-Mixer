@@ -7,7 +7,6 @@ nohup python run.py \
       --data ECW \
       --dir_path ./data/ECW \
       --data_path ECW_08.csv \
-      --freq h \
       --seq_len 48 \
       --label_len 24 \
       --pred_len 24  \
