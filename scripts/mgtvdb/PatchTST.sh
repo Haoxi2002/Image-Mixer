@@ -15,7 +15,5 @@ nohup python run.py \
       --n_heads 2 \
       --d_ff 2048 \
       --dropout 0 \
-      --batch_size 512 \
-      --learning_rate 0.001 \
       --use_multi_gpu \
       > mgtvdb_PatchTST.txt 2>&1 &

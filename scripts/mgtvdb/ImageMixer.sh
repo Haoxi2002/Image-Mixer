@@ -17,9 +17,7 @@ nohup python run.py \
       --patch_size 36 36 \
       --token_mlp_dim 256 \
       --channel_mlp_dim 8 \
-      --n_blocks 2 \
+      --n_blocks 6 \
       --dropout 0 \
-      --batch_size 512 \
-      --learning_rate 0.001 \
       --use_multi_gpu \
       > mgtvdb_ImageMixer.txt 2>&1 &

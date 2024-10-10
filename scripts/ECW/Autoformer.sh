@@ -15,7 +15,5 @@ nohup python run.py \
       --n_heads 2 \
       --d_ff 2048 \
       --dropout 0 \
-      --batch_size 512 \
-      --learning_rate 0.005 \
       --use_multi_gpu \
       > ECW_08_Autoformer.txt 2>&1 &

@@ -20,7 +20,5 @@ nohup python run.py \
       --channel_mlp_dim 16 \
       --n_blocks 2 \
       --dropout 0 \
-      --batch_size 512 \
-      --learning_rate 0.005 \
       --use_multi_gpu \
       > ECW_08_MV_DTSF.txt 2>&1 &

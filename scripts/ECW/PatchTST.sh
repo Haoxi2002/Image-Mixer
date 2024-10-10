@@ -15,7 +15,5 @@ nohup python run.py \
       --n_heads 4 \
       --d_ff 2048 \
       --dropout 0.01 \
-      --batch_size 512 \
-      --learning_rate 0.001 \
       --use_multi_gpu \
       > ECW_08_PatchTST.txt 2>&1 &
