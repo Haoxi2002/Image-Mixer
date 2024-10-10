@@ -42,7 +42,7 @@ class Dataset_Basic(Dataset):
         else:
             self.__read_data__()
 
-    def data2Pixel(self, dataXIn, draw_type='opencv'):  # type ['matplotlib', 'opencv', 'sampling']
+    def data2Pixel(self, dataXIn, draw_type='sampling'):  # type ['matplotlib', 'opencv', 'sampling']
         assert draw_type in ['matplotlib', 'opencv', 'sampling']
         dataX = np.copy(dataXIn.T)
         feature = dataX.shape[0]
