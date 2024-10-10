@@ -3,7 +3,7 @@ from torch import nn
 
 
 class MlpBlock(nn.Module):
-    def __init__(self, hidden_dim, mlp_dim, dropout):
+    def __init__(self, hidden_dim, mlp_dim, dropout=0):
         super(MlpBlock, self).__init__()
         self.linear1 = nn.Linear(hidden_dim, mlp_dim)
         self.gelu = nn.GELU()
