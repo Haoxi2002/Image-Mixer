@@ -25,7 +25,7 @@ class Model(nn.Module):
         self.flatten = nn.Flatten(start_dim=-2)
         self.linear = nn.Linear(args.seq_len * args.expand * args.seq_len * 2 * args.expand, args.pred_len)
 
-    def forward(self, x, mean, std):
+    def forward(self, x, static):
         bs, c, w, h = x.shape
         x = x.view(bs * c, 1, w, h)
         x = self.model(x)
@@ -34,5 +34,4 @@ class Model(nn.Module):
         x = self.flatten(x)
         x = self.linear(x)
         x = torch.transpose(x, -1, -2)
-        x = x * std + mean
         return x
