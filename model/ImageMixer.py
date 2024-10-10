@@ -9,8 +9,9 @@ class Model(nn.Module):
     def __init__(self, args):
         super(Model, self).__init__()
         self.args = args
-        self.token_dim = (args.seq_len * args.expand // args.patch_size[0]) * (args.h * args.expand // args.patch_size[1])  # token <==> patch
+        self.token_dim = (args.seq_len * args.expand // args.patch_size[0]) * (args.h * args.expand // args.patch_size[1]) + 1  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
+        self.static_embedding = nn.Linear(4, args.hidden_dim)
         self.blocks = nn.ModuleList([MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _ in range(args.n_blocks)])
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.flatten = nn.Flatten(start_dim=-2)
@@ -23,18 +24,18 @@ class Model(nn.Module):
         seq_y: (batch_size, pred_len, features)   
     """
 
-    def forward(self, x, mean, std):
+    def forward(self, x, static):
 
         bc, f_c, l, h = x.shape
         # CI
         x = torch.reshape(x, (-1, self.args.channel, x.shape[2], x.shape[3]))
-        mean = torch.reshape(mean, (-1, 1, 1))
-        std = torch.reshape(std, (-1, 1, 1))
+        static = torch.reshape(static, (-1, 1, 4))
 
         # encoder
         x = self.conv_embedding(x.float())
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
-        x = x * std + mean
+        static = self.static_embedding(static.float())
+        x = torch.cat([static, x], 1)
 
         # backbone
         for l in self.blocks:

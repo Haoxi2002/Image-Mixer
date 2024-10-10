@@ -35,7 +35,7 @@ class Dataset_Basic(Dataset):
         self.lc = self.args.lc
         self.expand = self.args.expand
         self.model_type = self.args.model_type
-        self.devide = 12
+        self.divide = 12
 
         if 'ECW' in self.data_path:
             self.__read_data_ECW__()
@@ -147,7 +147,10 @@ class Dataset_Basic(Dataset):
                 self.data['x_mark'].append(data_stamp[i:i+self.seq_len])
                 self.data['y_mark'].append(data_stamp[i+self.seq_len:i+self.seq_len+self.pred_len])
         if self.model_type == 0:
-            self.static = np.concatenate([np.array(self.data['mean']), self.data['std'], self.data['max'], self.data['min']], axis=1)  # np.array() just for eliminate Warning
+            self.static = np.concatenate([np.array(self.data['mean'])[:, :, np.newaxis],
+                                          np.array(self.data['std'])[:, :, np.newaxis],
+                                          np.array(self.data['max'])[:, :, np.newaxis],
+                                          np.array(self.data['min'])[:, :, np.newaxis]], axis=2)
 
     def __read_data_ECW__(self):
         df_raw = pd.read_csv(str(os.path.join(self.dir_path, self.data_path)))
@@ -177,7 +180,7 @@ class Dataset_Basic(Dataset):
         df_stamp['hour'] = df_stamp.date.astype(object).apply(lambda row: row.hour)
         data_stamp = df_stamp.drop(columns=['date']).values
         for device in range(data.shape[1]):
-            for i in range(len(data) - self.seq_len - self.pred_len + 1):
+            for i in range(0, len(data) - self.seq_len - self.pred_len + 1, self.divide):
                 self.data['x'].append(data[i:i + self.seq_len, device].reshape(-1, 1))
                 self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len, device].reshape(-1, 1))
                 if self.model_type == 0:
@@ -190,13 +193,16 @@ class Dataset_Basic(Dataset):
                     self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
                     self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
         if self.model_type == 0:
-            self.static = np.concatenate([np.array(self.data['mean']), self.data['std'], self.data['max'], self.data['min']], axis=1)  # np.array() just for eliminate Warning
+            self.static = np.concatenate([np.array(self.data['mean'])[:, :, np.newaxis],
+                                          np.array(self.data['std'])[:, :, np.newaxis],
+                                          np.array(self.data['max'])[:, :, np.newaxis],
+                                          np.array(self.data['min'])[:, :, np.newaxis]], axis=2)
 
     def __getitem__(self, index):
         if self.model_type == 0:
-            return self.data['x'], self.data['y'], self.data['fig'], self.static, 0, 0
+            return 0, self.data['y'][index], self.data['fig'][index], self.static[index], 0, 0
         else:
-            return self.data['x'], self.data['y'], 0, 0, self.data['x_mark'], self.data['y_mark']
+            return self.data['x'][index], self.data['y'][index], 0, 0, self.data['x_mark'][index], self.data['y_mark'][index]
 
     def __len__(self):
         return len(self.data['x'])

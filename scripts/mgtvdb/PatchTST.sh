@@ -6,10 +6,11 @@ nohup python run.py \
       --model PatchTST \
       --data mgtvdb \
       --dir_path ./data/PPIO \
-      --data_path mgtvdb.csv
+      --data_path mgtvdb.csv \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
+      --freq 5min \
       --d_model 64 \
       --n_heads 2 \
       --d_ff 2048 \
