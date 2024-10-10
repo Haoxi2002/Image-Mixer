@@ -131,18 +131,19 @@ class Dataset_Basic(Dataset):
         df_stamp['day'] = df_stamp.date.astype(object).apply(lambda row: row.day)
         df_stamp['weekday'] = df_stamp.date.astype(object).apply(lambda row: row.weekday())
         df_stamp['hour'] = df_stamp.date.astype(object).apply(lambda row: row.hour)
-        df_stamp['minute'] = df_stamp.date.apply(lambda row: row.minute, 1)
+        df_stamp['minute'] = df_stamp.date.astype(object).apply(lambda row: row.minute)
         df_stamp['minute'] = df_stamp.minute.map(lambda x: x // 5)
         data_stamp = df_stamp.drop(columns=['date']).values
         for i in range(len(data) - self.seq_len - self.pred_len + 1):
-            self.data['x'].append(data[i:i+self.seq_len])
+            data_x = data[i:i+self.seq_len]
+            self.data['x'].append(data_x)
             self.data['y'].append(data[i+self.seq_len:i+self.seq_len+self.pred_len])
             if self.model_type == 0:
-                self.data['mean'].append(np.mean(df_data.values[i:i+self.seq_len], axis=0))
-                self.data['std'].append(np.std(df_data.values[i:i+self.seq_len], axis=0))
-                self.data['max'].append(np.max(df_data.values[i:i+self.seq_len], axis=0))
-                self.data['min'].append(np.min(df_data.values[i:i+self.seq_len], axis=0))
-                self.data['fig'].append(self.data2Pixel(data[i:i+self.seq_len]))
+                self.data['mean'].append(np.mean(data_x, axis=0))
+                self.data['std'].append(np.std(data_x, axis=0))
+                self.data['max'].append(np.max(data_x, axis=0))
+                self.data['min'].append(np.min(data_x, axis=0))
+                self.data['fig'].append(self.data2Pixel(data_x))
             else:
                 self.data['x_mark'].append(data_stamp[i:i+self.seq_len])
                 self.data['y_mark'].append(data_stamp[i+self.seq_len:i+self.seq_len+self.pred_len])
@@ -181,14 +182,15 @@ class Dataset_Basic(Dataset):
         data_stamp = df_stamp.drop(columns=['date']).values
         for device in range(data.shape[1]):
             for i in range(0, len(data) - self.seq_len - self.pred_len + 1, self.divide):
-                self.data['x'].append(data[i:i + self.seq_len, device].reshape(-1, 1))
+                data_x = data[i:i + self.seq_len, device].reshape(-1, 1)
+                self.data['x'].append(data_x)
                 self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len, device].reshape(-1, 1))
                 if self.model_type == 0:
-                    self.data['mean'].append(np.mean(df_data.values[i:i + self.seq_len, device].reshape(-1, 1), axis=0))
-                    self.data['std'].append(np.std(df_data.values[i:i + self.seq_len, device].reshape(-1, 1), axis=0))
-                    self.data['max'].append(np.max(df_data.values[i:i + self.seq_len, device].reshape(-1, 1), axis=0))
-                    self.data['min'].append(np.min(df_data.values[i:i + self.seq_len, device].reshape(-1, 1), axis=0))
-                    self.data['fig'].append(self.data2Pixel(data[i:i + self.seq_len, device].reshape(-1, 1)))
+                    self.data['mean'].append(np.mean(data_x, axis=0))
+                    self.data['std'].append(np.std(data_x, axis=0))
+                    self.data['max'].append(np.max(data_x, axis=0))
+                    self.data['min'].append(np.min(data_x, axis=0))
+                    self.data['fig'].append(self.data2Pixel(data_x))
                 else:
                     self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
                     self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
@@ -200,7 +202,7 @@ class Dataset_Basic(Dataset):
 
     def __getitem__(self, index):
         if self.model_type == 0:
-            return 0, self.data['y'][index], self.data['fig'][index], self.static[index], 0, 0
+            return self.data['x'][index], self.data['y'][index], self.data['fig'][index], self.static[index], 0, 0
         else:
             return self.data['x'][index], self.data['y'][index], 0, 0, self.data['x_mark'][index], self.data['y_mark'][index]
 
