@@ -111,9 +111,7 @@ class Exp_Long_Term_Forecast_VI(object):
             print("Epoch: {} cost time: {}  speed: {:.4f}s/iter".format(epoch + 1, cost_time, cost_time / train_steps))
             train_loss = np.mean(train_loss)
             vali_loss = self.vali(vali_data, vali_loader, criterion)
-            test_loss = self.vali(test_data, test_loader, criterion)
-            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
-                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f}".format(epoch + 1, train_steps, train_loss, vali_loss))
             sys.stdout.flush()
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
