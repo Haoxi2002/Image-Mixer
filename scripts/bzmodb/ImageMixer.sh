@@ -13,11 +13,11 @@ nohup python run.py \
       --h $((288 * 2)) \
       --lw 3 \
       --channel 1 \
-      --hidden_dim 16 \
-      --patch_size 18 18 \
-      --token_mlp_dim 1024 \
-      --channel_mlp_dim 32 \
-      --n_blocks 6 \
+      --hidden_dim 4 \
+      --patch_size 36 36 \
+      --token_mlp_dim 256 \
+      --channel_mlp_dim 8 \
+      --n_blocks 2 \
       --dropout 0 \
       --use_multi_gpu \
       > bzmodb_ImageMixer.txt 2>&1 &

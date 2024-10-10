@@ -10,7 +10,8 @@ class Model(nn.Module):
         self.args = args
         self.token_dim = (args.seq_len * args.expand // args.patch_size[0]) * (args.h * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
-        self.static_embedding = nn.Linear(4, args.hidden_dim)
+        self.static_embedding1 = nn.Linear(4, self.token_dim)
+        self.static_embedding2 = nn.Linear(1, args.hidden_dim)
         self.blocks = nn.ModuleList([MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _ in range(args.n_blocks)])
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.flatten = nn.Flatten(start_dim=-2)
@@ -33,8 +34,8 @@ class Model(nn.Module):
         # encoder
         x = self.conv_embedding(x.float())
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
-        static = self.static_embedding(static)
-        static = static.expand(-1, x.size(1), -1)
+        static = self.static_embedding1(static)
+        static = self.static_embedding2(torch.transpose(static, 1, 2))
         x = x + static
 
         # backbone
