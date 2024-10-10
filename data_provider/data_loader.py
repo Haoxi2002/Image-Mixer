@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+import concurrent.futures
 
 import cv2
 import matplotlib.pyplot as plt
@@ -134,19 +135,24 @@ class Dataset_Basic(Dataset):
         df_stamp['minute'] = df_stamp.date.astype(object).apply(lambda row: row.minute)
         df_stamp['minute'] = df_stamp.minute.map(lambda x: x // 5)
         data_stamp = df_stamp.drop(columns=['date']).values
-        for i in range(len(data) - self.seq_len - self.pred_len + 1):
-            data_x = data[i:i+self.seq_len]
-            self.data['x'].append(data_x)
-            self.data['y'].append(data[i+self.seq_len:i+self.seq_len+self.pred_len])
-            if self.model_type == 0:
-                self.data['mean'].append(np.mean(data_x, axis=0))
-                self.data['std'].append(np.std(data_x, axis=0))
-                self.data['max'].append(np.max(data_x, axis=0))
-                self.data['min'].append(np.min(data_x, axis=0))
-                self.data['fig'].append(self.data2Pixel(data_x))
-            else:
-                self.data['x_mark'].append(data_stamp[i:i+self.seq_len])
-                self.data['y_mark'].append(data_stamp[i+self.seq_len:i+self.seq_len+self.pred_len])
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = []
+            for i in range(len(data) - self.seq_len - self.pred_len + 1):
+                data_x = data[i:i+self.seq_len]
+                self.data['x'].append(data_x)
+                self.data['y'].append(data[i+self.seq_len:i+self.seq_len+self.pred_len])
+                if self.model_type == 0:
+                    self.data['mean'].append(np.mean(data_x, axis=0))
+                    self.data['std'].append(np.std(data_x, axis=0))
+                    self.data['max'].append(np.max(data_x, axis=0))
+                    self.data['min'].append(np.min(data_x, axis=0))
+                    futures.append(executor.submit(self.data2Pixel, data_x))
+                    # self.data['fig'].append(self.data2Pixel(data_x))
+                else:
+                    self.data['x_mark'].append(data_stamp[i:i+self.seq_len])
+                    self.data['y_mark'].append(data_stamp[i+self.seq_len:i+self.seq_len+self.pred_len])
+            for future in concurrent.futures.as_completed(futures):
+                self.data['fig'].append(future.result())
         if self.model_type == 0:
             self.static = np.concatenate([np.array(self.data['mean'])[:, :, np.newaxis],
                                           np.array(self.data['std'])[:, :, np.newaxis],
@@ -180,20 +186,25 @@ class Dataset_Basic(Dataset):
         df_stamp['weekday'] = df_stamp.date.astype(object).apply(lambda row: row.weekday())
         df_stamp['hour'] = df_stamp.date.astype(object).apply(lambda row: row.hour)
         data_stamp = df_stamp.drop(columns=['date']).values
-        for device in range(data.shape[1]):
-            for i in range(0, len(data) - self.seq_len - self.pred_len + 1, self.divide):
-                data_x = data[i:i + self.seq_len, device].reshape(-1, 1)
-                self.data['x'].append(data_x)
-                self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len, device].reshape(-1, 1))
-                if self.model_type == 0:
-                    self.data['mean'].append(np.mean(data_x, axis=0))
-                    self.data['std'].append(np.std(data_x, axis=0))
-                    self.data['max'].append(np.max(data_x, axis=0))
-                    self.data['min'].append(np.min(data_x, axis=0))
-                    self.data['fig'].append(self.data2Pixel(data_x))
-                else:
-                    self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
-                    self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = []
+            for device in range(data.shape[1]):
+                for i in range(0, len(data) - self.seq_len - self.pred_len + 1, self.divide):
+                    data_x = data[i:i + self.seq_len, device].reshape(-1, 1)
+                    self.data['x'].append(data_x)
+                    self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len, device].reshape(-1, 1))
+                    if self.model_type == 0:
+                        self.data['mean'].append(np.mean(data_x, axis=0))
+                        self.data['std'].append(np.std(data_x, axis=0))
+                        self.data['max'].append(np.max(data_x, axis=0))
+                        self.data['min'].append(np.min(data_x, axis=0))
+                        futures.append(executor.submit(self.data2Pixel, data_x))
+                        # self.data['fig'].append(self.data2Pixel(data_x))
+                    else:
+                        self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
+                        self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
+            for future in concurrent.futures.as_completed(futures):
+                self.data['fig'].append(future.result())
         if self.model_type == 0:
             self.static = np.concatenate([np.array(self.data['mean'])[:, :, np.newaxis],
                                           np.array(self.data['std'])[:, :, np.newaxis],
