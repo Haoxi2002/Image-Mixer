@@ -14,11 +14,11 @@ nohup python run.py \
       --h $((48 * 2)) \
       --lw 0.5 \
       --channel 1 \
-      --hidden_dim 16 \
+      --hidden_dim 8 \
       --patch_size 8 8 \
       --token_mlp_dim 512 \
-      --channel_mlp_dim 16 \
-      --n_blocks 8 \
+      --channel_mlp_dim 8 \
+      --n_blocks 2 \
       --dropout 0 \
       --use_multi_gpu \
       > ECW_08_ImageMixer.txt 2>&1 &

@@ -10,12 +10,12 @@ class Model(nn.Module):
         self.args = args
         self.token_dim = (args.seq_len * args.expand // args.patch_size[0]) * (args.h * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
-        self.static_embedding1 = nn.Linear(4, self.token_dim)
-        self.static_embedding2 = nn.Linear(1, args.hidden_dim)
+        self.static_embedding = nn.Linear(4, self.token_dim)
         self.blocks = nn.ModuleList([MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _ in range(args.n_blocks)])
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.flatten = nn.Flatten(start_dim=-2)
-        self.linear = nn.Linear(self.token_dim * args.hidden_dim, args.pred_len)
+        self.mlp = MlpBlock(self.token_dim * (args.hidden_dim + 1), self.token_dim * (args.hidden_dim + 1) * 2)
+        self.linear = nn.Linear(self.token_dim * (args.hidden_dim + 1), args.pred_len)
 
     """
     input:    
@@ -32,11 +32,15 @@ class Model(nn.Module):
         static = torch.reshape(static, (-1, 1, 4))
 
         # encoder
-        x = self.conv_embedding(x.float())
+        # static = torch.unsqueeze(static, 1)
+        # static = self.static_embedding(static)
+        # static = torch.reshape(static, (-1, 1, l, h))
+        # x = x + static
+        x = self.conv_embedding(x)
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
-        static = self.static_embedding1(static)
-        static = self.static_embedding2(torch.transpose(static, 1, 2))
-        x = x + static
+        # static = self.static_embedding(static)
+        # static = torch.reshape(static, (bc, self.token_dim, -1))
+        # x = x + static
 
         # backbone
         for l in self.blocks:
@@ -45,6 +49,9 @@ class Model(nn.Module):
         # decoder (b, p, c)  b=batch_size p=patches c=channel
         x = self.flatten(x)
         x = torch.unsqueeze(x, dim=1)
+        static = self.static_embedding(static)
+        x = torch.cat([static, x], dim=2)
+        x = self.mlp(x)
         x = self.linear(x)
         x = torch.transpose(x, 1, 2)  # (bs, pred_len, 1)
 

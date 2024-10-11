@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_training', type=int, default=1, help='1 for train or 0 for test')
     parser.add_argument('--draw_test', type=int, default=1, help='draw test result')
     parser.add_argument('--task_id', type=str, default='test', help='task id')
-    parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
+    parser.add_argument('--model', type=str, default='Autoformer', help='model name')
 
     # data loader
     parser.add_argument('--data', type=str, default='ECW', help='data type')
