@@ -36,7 +36,7 @@ class Dataset_Basic(Dataset):
         self.lc = self.args.lc
         self.expand = self.args.expand
         self.model_type = self.args.model_type
-        self.divide = 128
+        self.divide = 12
 
         if 'ECW' in self.data_path:
             self.__read_data_ECW__()
