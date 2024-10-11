@@ -1,8 +1,8 @@
 torch==1.11.0
 numpy==1.26.4
 reformer-pytorch==1.4.4
-pandas==1.5.3
-matplotlib
-scikit-learn
-einops
-opencv-python
+pandas==2.2.2
+matplotlib==3.9.2
+scikit-learn==1.5.1
+einops==0.8.0
+opencv-python==4.10.0.84
