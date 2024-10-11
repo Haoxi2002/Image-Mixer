@@ -2,7 +2,7 @@ import einops
 import torch
 from torch import nn
 
-from layers.common import MixerBlock, MlpBlock
+from layers.mixer import MixerBlock, MlpBlock
 
 class Model(nn.Module):
     def __init__(self, args):
