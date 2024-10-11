@@ -36,7 +36,7 @@ class Dataset_Basic(Dataset):
         self.lc = self.args.lc
         self.expand = self.args.expand
         self.model_type = self.args.model_type
-        self.divide = 12
+        self.divide = 128
 
         if 'ECW' in self.data_path:
             self.__read_data_ECW__()
@@ -94,7 +94,7 @@ class Dataset_Basic(Dataset):
             # imgX[:, lenX * self.expand // 2 - 1, :] = np.expand_dims(self.lc, axis=1)
             # imgX[:, lenX * self.expand // 4 * 3 - 1, :] = np.expand_dims(self.lc, axis=1)
             # imgX[:, lenX * self.expand // 4 - 1, :] = np.expand_dims(self.lc, axis=1)
-        return imgX
+        return np.transpose(imgX, (0, 2, 1))
 
     def __read_data__(self):
         df_raw = pd.read_csv(str(os.path.join(self.dir_path, self.data_path)))
@@ -140,10 +140,15 @@ class Dataset_Basic(Dataset):
                 self.data['x'].append(data_x)
                 self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len])
                 if self.model_type == 0:
+                    self.data['max'].append(np.amax(data_x, axis=0))
+                    self.data['min'].append(np.amin(data_x, axis=0))
+                    self.data['median'].append(np.median(data_x, axis=0))
                     self.data['mean'].append(np.mean(data_x, axis=0))
+                    self.data['25th'].append(np.percentile(data_x, 25, axis=0))
+                    self.data['75th'].append(np.percentile(data_x, 75, axis=0))
+                    self.data['ptp'].append(np.ptp(data_x, axis=0))
                     self.data['std'].append(np.std(data_x, axis=0))
-                    self.data['max'].append(np.max(data_x, axis=0))
-                    self.data['min'].append(np.min(data_x, axis=0))
+                    self.data['var'].append(np.var(data_x, axis=0))
                     futures.append(executor.submit(self.data2Pixel, data_x))
                 else:
                     self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
@@ -151,10 +156,15 @@ class Dataset_Basic(Dataset):
             for future in concurrent.futures.as_completed(futures):
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
-            self.static = np.concatenate([np.array(self.data['mean'])[:, :, np.newaxis],
+            self.static = np.concatenate([np.array(self.data['max'])[:, :, np.newaxis],
+                                          np.array(self.data['min'])[:, :, np.newaxis],
+                                          np.array(self.data['median'])[:, :, np.newaxis],
+                                          np.array(self.data['mean'])[:, :, np.newaxis],
+                                          np.array(self.data['25th'])[:, :, np.newaxis],
+                                          np.array(self.data['75th'])[:, :, np.newaxis],
+                                          np.array(self.data['ptp'])[:, :, np.newaxis],
                                           np.array(self.data['std'])[:, :, np.newaxis],
-                                          np.array(self.data['max'])[:, :, np.newaxis],
-                                          np.array(self.data['min'])[:, :, np.newaxis]], axis=2)
+                                          np.array(self.data['var'])[:, :, np.newaxis]], axis=2)
 
     def __read_data_ECW__(self):
         df_raw = pd.read_csv(str(os.path.join(self.dir_path, self.data_path)))
@@ -191,10 +201,15 @@ class Dataset_Basic(Dataset):
                     self.data['x'].append(data_x)
                     self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len, device].reshape(-1, 1))
                     if self.model_type == 0:
+                        self.data['max'].append(np.amax(data_x, axis=0))
+                        self.data['min'].append(np.amin(data_x, axis=0))
+                        self.data['median'].append(np.median(data_x, axis=0))
                         self.data['mean'].append(np.mean(data_x, axis=0))
+                        self.data['25th'].append(np.percentile(data_x, 25, axis=0))
+                        self.data['75th'].append(np.percentile(data_x, 75, axis=0))
+                        self.data['ptp'].append(np.ptp(data_x, axis=0))
                         self.data['std'].append(np.std(data_x, axis=0))
-                        self.data['max'].append(np.max(data_x, axis=0))
-                        self.data['min'].append(np.min(data_x, axis=0))
+                        self.data['var'].append(np.var(data_x, axis=0))
                         futures.append(executor.submit(self.data2Pixel, data_x))
                     else:
                         self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
@@ -202,10 +217,15 @@ class Dataset_Basic(Dataset):
             for future in concurrent.futures.as_completed(futures):
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
-            self.static = np.concatenate([np.array(self.data['mean'])[:, :, np.newaxis],
+            self.static = np.concatenate([np.array(self.data['max'])[:, :, np.newaxis],
+                                          np.array(self.data['min'])[:, :, np.newaxis],
+                                          np.array(self.data['median'])[:, :, np.newaxis],
+                                          np.array(self.data['mean'])[:, :, np.newaxis],
+                                          np.array(self.data['25th'])[:, :, np.newaxis],
+                                          np.array(self.data['75th'])[:, :, np.newaxis],
+                                          np.array(self.data['ptp'])[:, :, np.newaxis],
                                           np.array(self.data['std'])[:, :, np.newaxis],
-                                          np.array(self.data['max'])[:, :, np.newaxis],
-                                          np.array(self.data['min'])[:, :, np.newaxis]], axis=2)
+                                          np.array(self.data['var'])[:, :, np.newaxis]], axis=2)
 
     def __getitem__(self, index):
         if self.model_type == 0:
