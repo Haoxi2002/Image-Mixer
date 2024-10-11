@@ -8,24 +8,18 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from data_provider.data_factory import data_provider
-from model import ImageMixer, Autoformer, DLinear, Pyraformer, MV_DTSF, TimesNet, PatchTST
-from utils.metrics import MSE, MAE, metric
+from model import ImageMixer
+from utils.metrics import metric
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 
 
-class Exp_Long_Term_Forecast_VI(object):
+class Exp(object):
     def __init__(self, args):
         self.args = args
         self.device = self._acquire_device()
         self.model_type = self.args.model_type
         self.model_dict = {
             'ImageMixer': ImageMixer,
-            'Autoformer': Autoformer,
-            'DLinear': DLinear,
-            'Pyraformer': Pyraformer,
-            'MV_DTSF': MV_DTSF,
-            'TimesNet': TimesNet,
-            'PatchTST': PatchTST
         }
         self.model = self._build_model().to(self.device)
 
@@ -52,14 +46,12 @@ class Exp_Long_Term_Forecast_VI(object):
 
     def train(self, setting):
         train_data, train_loader = self._get_data(flag='train')
-        vali_data, vali_loader = self._get_data(flag='val')
-        test_data, test_loader = self._get_data(flag='test')
+        _, vali_loader = self._get_data(flag='val')
 
         path = os.path.join(self.args.checkpoints, setting)
         if not os.path.exists(path):
             os.makedirs(path)
 
-        time_now = time.time()
         train_steps = len(train_loader)
         early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
 
@@ -74,6 +66,7 @@ class Exp_Long_Term_Forecast_VI(object):
 
             self.model.train()
             epoch_time = time.time()
+            time_now = time.time()
             for i, (seq_x, seq_y, fig_x, static, seq_x_mark, seq_y_mark) in enumerate(train_loader):
                 iter_count += 1
                 seq_y = seq_y.float().to(self.device)
@@ -86,10 +79,10 @@ class Exp_Long_Term_Forecast_VI(object):
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
                     seq_y_mark = seq_y_mark.float().to(self.device)
-                    dec_inp = torch.zeros_like(seq_y[:, -self.args.pred_len:, :]).float()
+                    dec_inp = torch.zeros_like(seq_y).float()
                     dec_inp = torch.cat([seq_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
                     y_pred = self.model(seq_x, seq_x_mark, dec_inp, seq_y_mark)
-                loss = criterion(y_pred, seq_y[:, -self.args.pred_len:, :])
+                loss = criterion(y_pred, seq_y)
                 train_loss.append(loss.item())
                 loss.backward()
                 model_optim.step()
@@ -101,7 +94,7 @@ class Exp_Long_Term_Forecast_VI(object):
                 if (i + 1) % 100 == 0:
                     print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
                     speed = (time.time() - time_now) / iter_count
-                    left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)
+                    left_time = speed * ((self.args.train_epochs - epoch + 1) * train_steps - i)
                     print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
                     iter_count = 0
                     time_now = time.time()
@@ -110,7 +103,7 @@ class Exp_Long_Term_Forecast_VI(object):
             cost_time = time.time() - epoch_time
             print("Epoch: {} cost time: {}  speed: {:.4f}s/iter".format(epoch + 1, cost_time, cost_time / train_steps))
             train_loss = np.mean(train_loss)
-            vali_loss = self.vali(vali_data, vali_loader, criterion)
+            vali_loss = self.vali(vali_loader, criterion)
             print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f}".format(epoch + 1, train_steps, train_loss, vali_loss))
             sys.stdout.flush()
             early_stopping(vali_loss, self.model, path)
@@ -128,7 +121,7 @@ class Exp_Long_Term_Forecast_VI(object):
 
         return self.model
 
-    def vali(self, vali_data, val_loader, criterion):
+    def vali(self, val_loader, criterion):
         total_loss = []
         self.model.eval()
         with torch.no_grad():
@@ -142,10 +135,10 @@ class Exp_Long_Term_Forecast_VI(object):
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
                     seq_y_mark = seq_y_mark.float().to(self.device)
-                    dec_inp = torch.zeros_like(seq_y[:, -self.args.pred_len:, :]).float()
+                    dec_inp = torch.zeros_like(seq_y).float()
                     dec_inp = torch.cat([seq_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
                     y_pred = self.model(seq_x, seq_x_mark, dec_inp, seq_y_mark)
-                loss = criterion(y_pred, seq_y[:, -self.args.pred_len:, :])
+                loss = criterion(y_pred, seq_y)
                 total_loss.append(loss.item())
 
         total_loss = np.average(total_loss)
@@ -159,6 +152,7 @@ class Exp_Long_Term_Forecast_VI(object):
             state_dict = torch.load(os.path.join(self.args.checkpoints, setting) + '/' + 'checkpoint.pth')
             self.model.load_state_dict(state_dict)
 
+        seq_xs = []
         preds = []
         trues = []
         folder_path = './test_results/' + setting + '/'
@@ -177,11 +171,11 @@ class Exp_Long_Term_Forecast_VI(object):
                     seq_x = seq_x.float().to(self.device)
                     seq_x_mark = seq_x_mark.float().to(self.device)
                     seq_y_mark = seq_y_mark.float().to(self.device)
-                    dec_inp = torch.zeros_like(seq_y[:, -self.args.pred_len:, :]).float()
+                    dec_inp = torch.zeros_like(seq_y).float()
                     dec_inp = torch.cat([seq_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
                     y_pred = self.model(seq_x, seq_x_mark, dec_inp, seq_y_mark)
                 outputs = y_pred.cpu().detach().numpy()
-                batch_y = seq_y[:, -self.args.pred_len:, :].cpu().detach().numpy()
+                batch_y = seq_y.cpu().detach().numpy()
 
                 if self.args.inverse:
                     shape = outputs.shape
@@ -191,6 +185,7 @@ class Exp_Long_Term_Forecast_VI(object):
                 pred = outputs
                 true = batch_y
 
+                seq_xs.append(seq_x.cpu().detach().numpy())
                 preds.append(pred)
                 trues.append(true)
                 if self.args.draw_test and i % 100 == 0:
@@ -203,6 +198,7 @@ class Exp_Long_Term_Forecast_VI(object):
                     # visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.png'))
 
+        seq_xs = np.asarray(seq_xs)
         preds = np.array(preds)
         trues = np.array(trues)
         # print('test shape:', preds.shape, trues.shape)
@@ -221,6 +217,7 @@ class Exp_Long_Term_Forecast_VI(object):
         f.write('mean_mse:{}, var_mse:{}, top_mse:{}, bottom_mse:{}, peak_mse:{}\nmean_mae:{}, var_mae:{}, top_mae:{}, bottom_mae:{}, peak_mae:{}'.format(mean_mse, var_mse, top_mse, bottom_mse, peak_mse, mean_mae, var_mae, top_mae, bottom_mae, peak_mae))
 
         np.save(folder_path + 'metrics.npy', np.array([mean_mse, var_mse, top_mse, bottom_mse, peak_mse, mean_mae, var_mae, top_mae, bottom_mae, peak_mae, rmse, mape, mspe]))
+        np.save(folder_path + 'seq_x.npy', seq_xs)
         np.save(folder_path + 'pred.npy', preds)
         np.save(folder_path + 'true.npy', trues)
         f.write('\n')

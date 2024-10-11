@@ -4,7 +4,7 @@ import random
 import numpy as np
 import torch
 
-from exp import Exp_Long_Term_Forecast_VI
+from exp import Exp
 
 if __name__ == '__main__':
     fix_seed = 2021
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_training', type=int, default=1, help='1 for train or 0 for test')
     parser.add_argument('--draw_test', type=int, default=1, help='draw test result')
     parser.add_argument('--task_id', type=str, default='test', help='task id')
-    parser.add_argument('--model', type=str, default='Autoformer', help='model name')
+    parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
 
     # data loader
     parser.add_argument('--data', type=str, default='ECW', help='data type')
@@ -39,35 +39,17 @@ if __name__ == '__main__':
     parser.add_argument('--pred_len', type=int, default=24, help='prediction sequence length')
     parser.add_argument('--inverse', action='store_true', default=False, help='inverse output data')
 
-    # numerical config
-    parser.add_argument('--top_k', type=int, default=5, help='for TimesBlock')
-    parser.add_argument('--num_kernels', type=int, default=6, help='for Inception')
-    parser.add_argument('--enc_in', type=int, default=1, help='encoder input size')
-    parser.add_argument('--dec_in', type=int, default=1, help='decoder input size')
-    parser.add_argument('--c_out', type=int, default=1, help='output size')
-    parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
-    parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
-    parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
-    parser.add_argument('--d_layers', type=int, default=1, help='num of decoder layers')
-    parser.add_argument('--d_ff', type=int, default=2048, help='dimension of fcn')
-    parser.add_argument('--moving_avg', type=int, default=25, help='window size of moving average')
-    parser.add_argument('--factor', type=int, default=1, help='attn factor')
-    parser.add_argument('--embed', type=str, default='timeF',
-                        help='time features encoding, options:[timeF, fixed, learned]')
-    parser.add_argument('--activation', type=str, default='gelu', help='activation')
-    parser.add_argument('--output_attention', action='store_true', help='whether to output attention in ecoder')
-
     # fig config
     parser.add_argument('--h', type=int, default=96, help='h')
     parser.add_argument('--lw', type=float, default=0.5, help='line width')
     parser.add_argument('--expand', type=int, default=1, help='expansion rate')
+    parser.add_argument('--channel', type=int, default=1, help='3 for RGB and 1 for Grey')
     parser.add_argument('--lc', type=float, nargs='+', default=(0, 0, 0), help='line color')
     parser.add_argument('--bc', type=float, nargs='+', default=(1, 1, 1), help='background color')
-    parser.add_argument('--channel', type=int, default=1, help='3 for RGB and 1 for Grey')
     parser.add_argument('--hidden_dim', type=int, default=16, help='hidden dimension')
+    parser.add_argument('--channel_mlp_dim', type=int, default=32, help='channel_mlp_dim')
     parser.add_argument('--patch_size', type=int, nargs='+', default=(8, 8), help='patch_size')
     parser.add_argument('--token_mlp_dim', type=int, default=512, help='token_mlp_dim')
-    parser.add_argument('--channel_mlp_dim', type=int, default=32, help='channel_mlp_dim')
     parser.add_argument('--n_blocks', type=int, default=2, help='block numbers of backbone')
 
     # optimization
@@ -95,22 +77,32 @@ if __name__ == '__main__':
     args.model_type = 0 if args.model == 'ImageMixer' else 1  # help='0 for image-based model, 1 for numerical-based model'
     print('Args: {}'.format(args))
 
-    exp = Exp_Long_Term_Forecast_VI(args)
+    exp = Exp(args)
     if args.is_training:
-        setting = '{}_{}_{}_seq_len{}_hd{}_ps{}_tmd{}_cmd{}_nb{}_drop{}_{}_lradj{}'.format(
-            args.task_id,
-            args.model,
-            args.data,
-            args.seq_len,
-            args.hidden_dim,
-            args.patch_size,
-            args.token_mlp_dim,
-            args.channel_mlp_dim,
-            args.n_blocks,
-            args.dropout,
-            args.features,
-            args.lradj
-        )
+        if args.model_type == 0:
+            setting = '{}_{}_{}_seq{}_pred{}_h{}_lw{}_expand{}_channel{}_lc{}_bc{}_hd{}_cmd{}_ps{}_tmd{}_nb{}_drop{}_lr{}'.format(
+                args.task_id,
+                args.model,
+                args.data,
+                args.features,
+                args.seq_len,
+                args.pred_len,
+                args.h,
+                args.lw,
+                args.expand,
+                args.channel,
+                args.lc,
+                args.bc,
+                args.hidden_dim,
+                args.channel_mlp_dim,
+                args.patch_size,
+                args.token_mlp_dim,
+                args.n_blocks,
+                args.dropout,
+                args.learning_rate
+            )
+        else:
+            pass
 
         print('>>>>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>'.format(setting))
         exp.train(setting)
@@ -118,20 +110,30 @@ if __name__ == '__main__':
         print('>>>>>>>>>>start testing : {}>>>>>>>>>>>>>>>>>>>>'.format(setting))
         exp.test(setting)
     else:
-        setting = '{}_{}_{}_seq_len{}_hd{}_ps{}_tmd{}_cmd{}_nb{}_drop{}_{}_lradj{}'.format(
-            args.task_id,
-            args.model,
-            args.data,
-            args.seq_len,
-            args.hidden_dim,
-            args.patch_size,
-            args.token_mlp_dim,
-            args.channel_mlp_dim,
-            args.n_blocks,
-            args.dropout,
-            args.features,
-            args.lradj
-        )
+        if args.model_type == 0:
+            setting = '{}_{}_{}_seq{}_pred{}_h{}_lw{}_expand{}_channel{}_lc{}_bc{}_hd{}_cmd{}_ps{}_tmd{}_nb{}_drop{}_lr{}'.format(
+                args.task_id,
+                args.model,
+                args.data,
+                args.features,
+                args.seq_len,
+                args.pred_len,
+                args.h,
+                args.lw,
+                args.expand,
+                args.channel,
+                args.lc,
+                args.bc,
+                args.hidden_dim,
+                args.channel_mlp_dim,
+                args.patch_size,
+                args.token_mlp_dim,
+                args.n_blocks,
+                args.dropout,
+                args.learning_rate
+            )
+        else:
+            pass
 
         print('>>>>>>>>>>start testing : {}>>>>>>>>>>>>>>>>>>>>'.format(setting))
         exp.test(setting, test=1)
