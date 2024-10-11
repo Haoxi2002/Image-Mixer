@@ -43,7 +43,7 @@ class Dataset_Basic(Dataset):
         else:
             self.__read_data__()
 
-    def data2Pixel(self, dataXIn, draw_type='sampling'):  # type ['matplotlib', 'opencv', 'sampling']
+    def data2Pixel(self, dataXIn, draw_type='sampling'):
         assert draw_type in ['matplotlib', 'opencv', 'sampling']
         dataX = np.copy(dataXIn.T)
         feature = dataX.shape[0]
@@ -52,8 +52,7 @@ class Dataset_Basic(Dataset):
         imgX = np.zeros([feature * self.channel, lenX * self.expand, self.h * self.expand], dtype=np.float32)
         for i in range(feature):
             if draw_type == 'matplotlib':
-                canvas = FigureCanvasAgg(
-                    plt.figure(figsize=(lenX / 100 * self.expand, self.h / 100 * self.expand), facecolor=self.bc))
+                canvas = FigureCanvasAgg(plt.figure(figsize=(lenX / 100 * self.expand, self.h / 100 * self.expand), facecolor=self.bc))
                 plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
                 plt.gca().spines['top'].set_visible(False)
                 plt.gca().spines['right'].set_visible(False)
@@ -72,19 +71,18 @@ class Dataset_Basic(Dataset):
                     imgX[i * self.channel:(i + 1) * self.channel, :img.shape[1], :] = np.transpose(img, (2, 1, 0))
                 plt.close()
             else:
-                img = (np.ones((self.h * self.expand, lenX * self.expand, 3), dtype=np.uint8) * (
-                int(self.bc[0] * 255), int(self.bc[1] * 255), int(self.bc[2] * 255))).astype(np.uint8)
+                img = (np.ones((self.h * self.expand, lenX * self.expand, 3), dtype=np.uint8) * (int(self.bc[0] * 255), int(self.bc[1] * 255), int(self.bc[2] * 255))).astype(np.uint8)
                 data_line = 1 - (dataX[i] - np.min(dataX[i])) / (np.max(dataX[i]) - np.min(dataX[i]))
                 if draw_type == 'opencv':  # self.lc is not used
                     for j in range(lenX - 1):
                         pt1 = (int(j * self.expand), round(data_line[j] * (self.h * self.expand - 1)))
                         pt2 = (int((j + 1) * self.expand), round(data_line[j + 1] * (self.h * self.expand - 1)))
-                        cv2.line(img, pt1, pt2, (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255)),
-                                 self.lw if type(self.lw) == int else 1)
+                        cv2.line(img, pt1, pt2, (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255)), self.lw if type(self.lw) == int else 1)
                 else:  # if draw_type == 'sampling'  self.lw is not used
                     data_line = np.round(data_line * (self.h - 1)).astype(int)
                     for j in range(self.expand):
-                        img[np.repeat(data_line, self.expand) * self.expand + j, np.arange(len(data_line) * self.expand), :] = (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255))
+                        img[np.repeat(data_line, self.expand) * self.expand + j,
+                        np.arange(len(data_line) * self.expand), :] = (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255))
                 if self.channel == 1:
                     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     imgX[i, :gray_img.shape[1], :] = np.transpose(np.expand_dims(gray_img, axis=0) / 255, (0, 2, 1))
@@ -138,19 +136,18 @@ class Dataset_Basic(Dataset):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = []
             for i in range(len(data) - self.seq_len - self.pred_len + 1):
-                data_x = data[i:i+self.seq_len]
+                data_x = data[i:i + self.seq_len]
                 self.data['x'].append(data_x)
-                self.data['y'].append(data[i+self.seq_len:i+self.seq_len+self.pred_len])
+                self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len])
                 if self.model_type == 0:
                     self.data['mean'].append(np.mean(data_x, axis=0))
                     self.data['std'].append(np.std(data_x, axis=0))
                     self.data['max'].append(np.max(data_x, axis=0))
                     self.data['min'].append(np.min(data_x, axis=0))
                     futures.append(executor.submit(self.data2Pixel, data_x))
-                    # self.data['fig'].append(self.data2Pixel(data_x))
                 else:
-                    self.data['x_mark'].append(data_stamp[i:i+self.seq_len])
-                    self.data['y_mark'].append(data_stamp[i+self.seq_len:i+self.seq_len+self.pred_len])
+                    self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
+                    self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
             for future in concurrent.futures.as_completed(futures):
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
@@ -199,7 +196,6 @@ class Dataset_Basic(Dataset):
                         self.data['max'].append(np.max(data_x, axis=0))
                         self.data['min'].append(np.min(data_x, axis=0))
                         futures.append(executor.submit(self.data2Pixel, data_x))
-                        # self.data['fig'].append(self.data2Pixel(data_x))
                     else:
                         self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
                         self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
