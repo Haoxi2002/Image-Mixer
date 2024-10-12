@@ -16,7 +16,6 @@ class Model(nn.Module):
         self.blocks = nn.ModuleList(
             [MixerBlock(args.hidden_dim, self.token_dim * 2, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _
              in range(args.n_blocks)])
-        self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.flatten = nn.Flatten(start_dim=-2)
         self.static_embedding2 = nn.Linear(9, self.token_dim * args.hidden_dim)
         self.fc_fusion2 = nn.Linear(self.token_dim * args.hidden_dim * 2, self.token_dim * args.hidden_dim)
@@ -52,7 +51,6 @@ class Model(nn.Module):
             x = l(x)
 
         # decoder (b, p, c)  b=batch_size p=patches c=channel
-        # x = self.head_layer_norm(x)
         x = self.flatten(x)
         x = torch.unsqueeze(x, dim=1)
         # late fusion
