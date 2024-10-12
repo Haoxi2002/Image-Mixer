@@ -22,14 +22,6 @@ def MSPE(pred, true):
     return np.mean(np.square((pred - true) / true))
 
 
-def find_peaks_own(x):
-    peaks_all = []
-    for i in range(x.shape[0]):
-        peaks, _ = find_peaks(x[i, :, 0], prominence=np.mean(x[i, :, 0]) / 10)
-        peaks = expand(peaks, x.shape[1])
-        peaks_all.append(peaks)
-    return peaks_all
-
 
 def expand(x, maxx, offset=5):
     expanded = set()
@@ -39,6 +31,19 @@ def expand(x, maxx, offset=5):
                 expanded.add(index + i)
     sorted_expanded = sorted(expanded)
     return np.asarray(sorted_expanded)
+
+
+def find_peaks_own(x):
+    peaks_all = []
+    for i in range(x.shape[0]):
+        peaks, _ = find_peaks(x[i, :, 0], prominence=np.mean(x[i, :, 0]) / 10)
+        cnt = 10
+        while len(peaks) == 0 and cnt <= 100:
+            cnt += 10
+            peaks, _ = find_peaks(x[i, :, 0], prominence=np.mean(x[i, :, 0]) / cnt)
+        peaks = expand(peaks, x.shape[1])
+        peaks_all.append(peaks)
+    return peaks_all
 
 
 def mean_var_mae(pred, true):
@@ -64,12 +69,13 @@ def mean_var_mae(pred, true):
     top_mae = []
     bottom_mae = []
     for i in range(true.shape[0]):
-        top_true = np.take_along_axis(true[i, :, 0], top_indices[i], axis=0)
-        bottom_true = np.take_along_axis(true[i, :, 0], bottom_indices[i], axis=0)
-        top_pred = np.take_along_axis(pred[i, :, 0], top_indices[i], axis=0)
-        bottom_pred = np.take_along_axis(pred[i, :, 0], bottom_indices[i], axis=0)
-        top_mae.append(np.mean(np.abs(top_pred - top_true)))
-        bottom_mae.append(np.mean(np.abs(bottom_pred - bottom_true)))
+        if len(top_indices[i]) != 0:
+            top_true = np.take_along_axis(true[i, :, 0], top_indices[i], axis=0)
+            bottom_true = np.take_along_axis(true[i, :, 0], bottom_indices[i], axis=0)
+            top_pred = np.take_along_axis(pred[i, :, 0], top_indices[i], axis=0)
+            bottom_pred = np.take_along_axis(pred[i, :, 0], bottom_indices[i], axis=0)
+            top_mae.append(np.mean(np.abs(top_pred - top_true)))
+            bottom_mae.append(np.mean(np.abs(bottom_pred - bottom_true)))
     top_mae = np.mean(np.array(top_mae))
     bottom_mae = np.mean(np.array(bottom_mae))
     peak_mae = (top_mae + bottom_mae) / 2
@@ -94,12 +100,13 @@ def mean_var_mse(pred, true):
     top_mse = []
     bottom_mse = []
     for i in range(true.shape[0]):
-        top_true = np.take_along_axis(true[i, :, 0], top_indices[i], axis=0)
-        bottom_true = np.take_along_axis(true[i, :, 0], bottom_indices[i], axis=0)
-        top_pred = np.take_along_axis(pred[i, :, 0], top_indices[i], axis=0)
-        bottom_pred = np.take_along_axis(pred[i, :, 0], bottom_indices[i], axis=0)
-        top_mse.append(np.mean((top_pred - top_true) ** 2))
-        bottom_mse.append(np.mean((bottom_pred - bottom_true) ** 2))
+        if len(top_indices[i]) != 0:
+            top_true = np.take_along_axis(true[i, :, 0], top_indices[i], axis=0)
+            bottom_true = np.take_along_axis(true[i, :, 0], bottom_indices[i], axis=0)
+            top_pred = np.take_along_axis(pred[i, :, 0], top_indices[i], axis=0)
+            bottom_pred = np.take_along_axis(pred[i, :, 0], bottom_indices[i], axis=0)
+            top_mse.append(np.mean((top_pred - top_true) ** 2))
+            bottom_mse.append(np.mean((bottom_pred - bottom_true) ** 2))
     top_mse = np.mean(np.array(top_mse))
     bottom_mse = np.mean(np.array(bottom_mse))
     # top_mse = np.mean((top_20_true - top_20_pred) ** 2)
