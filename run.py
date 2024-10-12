@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_training', type=int, default=1, help='1 for train or 0 for test')
     parser.add_argument('--draw_test', type=int, default=1, help='draw test result')
     parser.add_argument('--task_id', type=str, default='test', help='task id')
-    parser.add_argument('--model', type=str, default='PatchTST', help='model name')
+    parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
 
     # data loader
     parser.add_argument('--data', type=str, default='ECW', help='data type')
@@ -40,16 +40,16 @@ if __name__ == '__main__':
     parser.add_argument('--inverse', action='store_true', default=False, help='inverse output data')
 
     # fig config
-    parser.add_argument('--h', type=int, default=96, help='h')
+    parser.add_argument('--h', type=int, default=48, help='h')
     parser.add_argument('--lw', type=float, default=0.5, help='line width')
-    parser.add_argument('--expand', type=int, default=1, help='expansion rate')
+    parser.add_argument('--expand', type=int, default=2, help='expansion rate')
     parser.add_argument('--channel', type=int, default=1, help='3 for RGB and 1 for Grey')
     parser.add_argument('--lc', type=float, nargs='+', default=(0, 0, 0), help='line color')
     parser.add_argument('--bc', type=float, nargs='+', default=(1, 1, 1), help='background color')
     parser.add_argument('--hidden_dim', type=int, default=16, help='hidden dimension')
     parser.add_argument('--channel_mlp_dim', type=int, default=32, help='channel_mlp_dim')
-    parser.add_argument('--patch_size', type=int, nargs='+', default=(8, 8), help='patch_size')
-    parser.add_argument('--token_mlp_dim', type=int, default=512, help='token_mlp_dim')
+    parser.add_argument('--patch_size', type=int, nargs='+', default=(6, 6), help='patch_size')
+    parser.add_argument('--token_mlp_dim', type=int, default=256, help='token_mlp_dim')
     parser.add_argument('--n_blocks', type=int, default=2, help='block numbers of backbone')
 
     # numerical config

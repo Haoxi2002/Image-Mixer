@@ -11,15 +11,15 @@ class Model(nn.Module):
         self.token_dim = (args.h * args.expand // args.patch_size[0]) * (args.seq_len * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
         self.static_embedding1 = nn.Linear(9, self.token_dim * args.hidden_dim)
-        self.fc_fusion1 = nn.Linear(args.hidden_dim * 2, args.hidden_dim)
         self.blocks = nn.ModuleList(
             [MixerBlock(args.hidden_dim, self.token_dim * 2, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _
              in range(args.n_blocks)])
         self.flatten = nn.Flatten(start_dim=-2)
         self.static_embedding2 = nn.Linear(9, self.token_dim * args.hidden_dim)
-        self.fc_fusion2 = nn.Linear(self.token_dim * args.hidden_dim * 2, self.token_dim * args.hidden_dim)
+        self.fc_fusion2 = nn.Linear(self.token_dim * args.hidden_dim * 3, self.token_dim * args.hidden_dim * 2)
         self.linear = nn.Linear(self.token_dim * args.hidden_dim * 2, args.pred_len)
         self.gelu = nn.GELU()
+        self.dropout = nn.Dropout(0.1)
 
     """
     input:    
@@ -41,7 +41,6 @@ class Model(nn.Module):
         # early fusion
         e_static = self.static_embedding1(static)
         e_static = torch.reshape(e_static, (bc, self.token_dim, self.args.hidden_dim))
-        # x = self.fc_fusion1(torch.cat((x, e_static), dim=2))
         x = torch.cat((x, e_static), dim=1)
 
         # backbone
@@ -52,10 +51,11 @@ class Model(nn.Module):
         x = self.flatten(x)
         x = torch.unsqueeze(x, dim=1)
         # late fusion
-        # d_static = self.static_embedding2(static)
-        # x = torch.cat([d_static, x], dim=2)
-        # x = self.fc_fusion2(x)
-        # x = self.gelu(x)
+        d_static = self.static_embedding2(static)
+        x = torch.cat([d_static, x], dim=2)
+        x = self.fc_fusion2(x)
+        x = self.gelu(x)
+        x = self.dropout(x)
         x = self.linear(x)
         x = torch.transpose(x, 1, 2)  # (bs, pred_len, 1)
 
