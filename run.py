@@ -80,19 +80,13 @@ if __name__ == '__main__':
     exp = Exp(args)
     if args.is_training:
         if args.model_type == 0:
-            setting = '{}_{}_{}_seq{}_pred{}_h{}_lw{}_expand{}_channel{}_lc{}_bc{}_hd{}_cmd{}_ps{}_tmd{}_nb{}_drop{}_lr{}'.format(
+            setting = '{}_{}_{}_{}_seq{}_pred{}_hd{}_cmd{}_ps{}_tmd{}_nb{}_drop{}_lr{}'.format(
                 args.task_id,
                 args.model,
                 args.data,
                 args.features,
                 args.seq_len,
                 args.pred_len,
-                args.h,
-                args.lw,
-                args.expand,
-                args.channel,
-                args.lc,
-                args.bc,
                 args.hidden_dim,
                 args.channel_mlp_dim,
                 args.patch_size,
@@ -111,19 +105,13 @@ if __name__ == '__main__':
         exp.test(setting)
     else:
         if args.model_type == 0:
-            setting = '{}_{}_{}_seq{}_pred{}_h{}_lw{}_expand{}_channel{}_lc{}_bc{}_hd{}_cmd{}_ps{}_tmd{}_nb{}_drop{}_lr{}'.format(
+            setting = '{}_{}_{}_{}_seq{}_pred{}_hd{}_cmd{}_ps{}_tmd{}_nb{}_drop{}_lr{}'.format(
                 args.task_id,
                 args.model,
                 args.data,
                 args.features,
                 args.seq_len,
                 args.pred_len,
-                args.h,
-                args.lw,
-                args.expand,
-                args.channel,
-                args.lc,
-                args.bc,
                 args.hidden_dim,
                 args.channel_mlp_dim,
                 args.patch_size,
