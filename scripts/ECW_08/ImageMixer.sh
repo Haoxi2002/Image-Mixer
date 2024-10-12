@@ -14,10 +14,10 @@ nohup python run.py \
 		  --inverse \
       --h $((48)) \
       --expand 2 \
-      --hidden_dim 4 \
-      --channel_mlp_dim 8 \
+      --hidden_dim 16 \
+      --channel_mlp_dim 32 \
       --patch_size 6 6 \
-      --token_mlp_dim 32 \
+      --token_mlp_dim 256 \
       --n_blocks 8 \
       --dropout 0 \
       --use_multi_gpu \
