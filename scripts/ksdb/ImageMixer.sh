@@ -11,6 +11,11 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-      --h $((288 * 2)) \
+      --h $((288)) \
+      --hidden_dim 4 \
+      --channel_mlp_dim 8 \
+      --patch_size 36 36 \
+      --token_mlp_dim 128 \
+      --n_blocks 2 \
       --use_multi_gpu \
       > ksdb_ImageMixer.txt 2>&1 &
