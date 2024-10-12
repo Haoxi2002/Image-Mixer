@@ -214,7 +214,7 @@ class Dataset_Basic(Dataset):
                     else:
                         self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
                         self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
-            for future in concurrent.futures.as_completed(futures):
+            for future in futures:
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
             self.static = np.concatenate([np.array(self.data['max'])[:, :, np.newaxis],
