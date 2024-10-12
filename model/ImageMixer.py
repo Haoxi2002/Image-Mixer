@@ -11,31 +11,15 @@ class Model(nn.Module):
         self.token_dim = (args.h * args.expand // args.patch_size[0]) * (args.seq_len * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
         self.embedding_feedforward = MlpBlock(args.hidden_dim, args.hidden_dim * 2, args.dropout)
-        self.static_embedding1 = nn.Sequential(
-            nn.Linear(9, self.token_dim),
-            nn.GELU(),
-            nn.Dropout(args.dropout),
-            nn.Linear(self.token_dim, self.token_dim * args.hidden_dim),
-            nn.Dropout(args.dropout),
-        )
-        self.fc_fusion = nn.Linear(args.hidden_dim * 2, args.hidden_dim)
+        self.static_embedding1 = nn.Linear(9, self.token_dim * args.hidden_dim)
+        self.fc_fusion1 = nn.Linear(args.hidden_dim * 2, args.hidden_dim)
         self.blocks = nn.ModuleList(
             [MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _
              in range(args.n_blocks)])
         self.head_layer_norm = nn.LayerNorm(args.hidden_dim)
         self.flatten = nn.Flatten(start_dim=-2)
-        self.static_embedding2 = nn.Sequential(
-            nn.Linear(9, self.token_dim),
-            nn.GELU(),
-            nn.Dropout(args.dropout),
-            nn.Linear(self.token_dim, self.token_dim * args.hidden_dim),
-            nn.Dropout(args.dropout),
-        )
-        self.mlp = nn.Sequential(
-            MlpBlock(self.token_dim * args.hidden_dim * 2, self.token_dim * args.hidden_dim * 4),
-            nn.GELU(),
-            nn.Linear(self.token_dim * args.hidden_dim * 2, self.token_dim * args.hidden_dim)
-        )
+        self.static_embedding2 = nn.Linear(9, self.token_dim * args.hidden_dim)
+        self.fc_fusion2 = nn.Linear(self.token_dim * args.hidden_dim * 2, self.token_dim * args.hidden_dim)
         self.linear = nn.Linear(self.token_dim * args.hidden_dim, args.pred_len)
 
     """
@@ -55,10 +39,11 @@ class Model(nn.Module):
         # encoder
         x = self.conv_embedding(x)
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
+        # early fusion
         # x = self.embedding_feedforward(x)
         # e_static = self.static_embedding1(static)
         # e_static = torch.reshape(e_static, (bc, self.token_dim, self.args.hidden_dim))
-        # x = self.fc_fusion(torch.cat((x, e_static), dim=2))
+        # x = self.fc_fusion1(torch.cat((x, e_static), dim=2))
 
         # backbone
         for l in self.blocks:
@@ -68,9 +53,10 @@ class Model(nn.Module):
         # x = self.head_layer_norm(x)
         x = self.flatten(x)
         x = torch.unsqueeze(x, dim=1)
+        # Late fusion
         # d_static = self.static_embedding2(static)
         # x = torch.cat([d_static, x], dim=2)
-        # x = self.mlp(x)
+        # x = self.fc_fusion2(x)
         x = self.linear(x)
         x = torch.transpose(x, 1, 2)  # (bs, pred_len, 1)
 
