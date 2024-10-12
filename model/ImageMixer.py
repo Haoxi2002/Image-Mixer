@@ -10,7 +10,6 @@ class Model(nn.Module):
         self.args = args
         self.token_dim = (args.h * args.expand // args.patch_size[0]) * (args.seq_len * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
-        self.embedding_feedforward = MlpBlock(args.hidden_dim, args.hidden_dim * 2, args.dropout)
         self.static_embedding1 = nn.Linear(9, self.token_dim * args.hidden_dim)
         self.fc_fusion1 = nn.Linear(args.hidden_dim * 2, args.hidden_dim)
         self.blocks = nn.ModuleList(
@@ -40,7 +39,6 @@ class Model(nn.Module):
         x = self.conv_embedding(x)
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
         # early fusion
-        x = self.embedding_feedforward(x)
         e_static = self.static_embedding1(static)
         e_static = torch.reshape(e_static, (bc, self.token_dim, self.args.hidden_dim))
         # x = self.fc_fusion1(torch.cat((x, e_static), dim=2))
