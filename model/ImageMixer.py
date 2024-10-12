@@ -36,7 +36,7 @@ class Model(nn.Module):
             nn.GELU(),
             nn.Linear(self.token_dim * args.hidden_dim * 2, self.token_dim * args.hidden_dim)
         )
-        self.linear = nn.Linear(self.token_dim * args.hidden_dim * 2, args.pred_len)
+        self.linear = nn.Linear(self.token_dim * args.hidden_dim, args.pred_len)
 
     """
     input:    
