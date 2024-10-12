@@ -18,7 +18,7 @@ nohup python run.py \
       --channel_mlp_dim 32 \
       --patch_size 6 6 \
       --token_mlp_dim 256 \
-      --n_blocks 8 \
+      --n_blocks 2 \
       --dropout 0 \
       --use_multi_gpu \
       > ECW_08_ImageMixer.txt 2>&1 &
