@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_training', type=int, default=1, help='1 for train or 0 for test')
     parser.add_argument('--draw_test', type=int, default=1, help='draw test result')
     parser.add_argument('--task_id', type=str, default='test', help='task id')
-    parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
+    parser.add_argument('--model', type=str, default='PatchTST', help='model name')
 
     # data loader
     parser.add_argument('--data', type=str, default='ECW', help='data type')
@@ -51,6 +51,15 @@ if __name__ == '__main__':
     parser.add_argument('--patch_size', type=int, nargs='+', default=(8, 8), help='patch_size')
     parser.add_argument('--token_mlp_dim', type=int, default=512, help='token_mlp_dim')
     parser.add_argument('--n_blocks', type=int, default=2, help='block numbers of backbone')
+
+    # numerical config
+    parser.add_argument('--enc_in', type=int, default=1, help='encoder input size')
+    parser.add_argument('--d_model', type=int, default=64, help='dimension of model')
+    parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
+    parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
+    parser.add_argument('--d_ff', type=int, default=512, help='dimension of fcn')
+    parser.add_argument('--factor', type=int, default=1, help='attn factor')
+    parser.add_argument('--activation', type=str, default='gelu', help='activation')
 
     # optimization
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
@@ -96,7 +105,20 @@ if __name__ == '__main__':
                 args.learning_rate
             )
         else:
-            pass
+            setting = '{}_{}_{}_{}_seq{}_pred{}_d_model{}_n_heads{}_e_layers{}_d_ff{}_drop{}_lr{}'.format(
+                args.task_id,
+                args.model,
+                args.data,
+                args.features,
+                args.seq_len,
+                args.pred_len,
+                args.d_model,
+                args.n_heads,
+                args.e_layers,
+                args.d_ff,
+                args.dropout,
+                args.learning_rate
+            )
 
         print('>>>>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>'.format(setting))
         exp.train(setting)
@@ -121,7 +143,20 @@ if __name__ == '__main__':
                 args.learning_rate
             )
         else:
-            pass
+            setting = '{}_{}_{}_{}_seq{}_pred{}_d_model{}_n_heads{}_e_layers{}_d_ff{}_drop{}_lr{}'.format(
+                args.task_id,
+                args.model,
+                args.data,
+                args.features,
+                args.seq_len,
+                args.pred_len,
+                args.d_model,
+                args.n_heads,
+                args.e_layers,
+                args.d_ff,
+                args.dropout,
+                args.learning_rate
+            )
 
         print('>>>>>>>>>>start testing : {}>>>>>>>>>>>>>>>>>>>>'.format(setting))
         exp.test(setting, test=1)

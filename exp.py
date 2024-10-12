@@ -8,7 +8,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from data_provider.data_factory import data_provider
-from model import ImageMixer
+from model import ImageMixer, PatchTST
 from utils.metrics import metric
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 
@@ -20,6 +20,7 @@ class Exp(object):
         self.model_type = self.args.model_type
         self.model_dict = {
             'ImageMixer': ImageMixer,
+            'PatchTST': PatchTST,
         }
         self.model = self._build_model().to(self.device)
 
