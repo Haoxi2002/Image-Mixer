@@ -43,7 +43,7 @@ class Dataset_Basic(Dataset):
         else:
             self.__read_data__()
 
-    def data2Pixel(self, dataXIn, draw_type='sampling'):
+    def data2Pixel(self, dataXIn, draw_type='opencv'):
         assert draw_type in ['matplotlib', 'opencv', 'sampling']
         dataX = np.copy(dataXIn.T)
         feature = dataX.shape[0]
@@ -73,7 +73,7 @@ class Dataset_Basic(Dataset):
             else:
                 img = (np.ones((self.h * self.expand, lenX * self.expand, 3), dtype=np.uint8) * (int(self.bc[0] * 255), int(self.bc[1] * 255), int(self.bc[2] * 255))).astype(np.uint8)
                 data_line = 1 - (dataX[i] - np.min(dataX[i])) / (np.max(dataX[i]) - np.min(dataX[i]))
-                if draw_type == 'opencv':  # self.lc is not used
+                if draw_type == 'opencv':
                     for j in range(lenX - 1):
                         pt1 = (int(j * self.expand), round(data_line[j] * (self.h * self.expand - 1)))
                         pt2 = (int((j + 1) * self.expand), round(data_line[j + 1] * (self.h * self.expand - 1)))
