@@ -10,9 +10,9 @@ nohup python run.py \
       --freq h \
       --seq_len 48 \
       --label_len 24 \
-      --pred_len 24  \
+      --pred_len 24 \
 		  --inverse \
-		  --d_model 128 \
+		  --d_model 2048 \
 		  --e_layers 2 \
       --use_multi_gpu \
       > ECW_08_LSTM.txt 2>&1 &
