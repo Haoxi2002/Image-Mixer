@@ -18,7 +18,7 @@ nohup python run.py \
       --expand 2 \
       --channel 1 \
       --lc 0 0 0 \
-      --bc 0 0 0 \
+      --bc 1 1 1 \
       --hidden_dim 16 \
       --channel_mlp_dim 32 \
       --patch_size 6 6 \
@@ -28,6 +28,6 @@ nohup python run.py \
       --batch_size 512 \
       --patience 50 \
       --dropout 0 \
-      --learning_rate 0.001 \
+      --learning_rate 0.0001 \
       --use_multi_gpu \
       > ECW_08_ImageMixer.txt 2>&1 &
