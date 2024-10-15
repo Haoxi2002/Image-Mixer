@@ -12,7 +12,7 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-		  --d_model 64 \
+		  --d_model 128 \
 		  --e_layers 2 \
       --use_multi_gpu \
       > ECW_08_LSTM.txt 2>&1 &
