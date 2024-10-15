@@ -46,7 +46,7 @@ class Model(nn.Module):
         x = self.flatten(x)
         x = torch.unsqueeze(x, dim=1)
         x = self.out(x)
-        x = static * x
+        x = x * static
         x = self.linear(x)
         x = torch.transpose(x, 1, 2)  # (bs, pred_len, 1)
 
