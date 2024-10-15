@@ -53,6 +53,8 @@ if __name__ == '__main__':
     parser.add_argument('--n_blocks', type=int, default=2, help='block numbers of backbone')
 
     # numerical config
+    parser.add_argument('--top_k', type=int, default=5, help='for TimesNet')
+    parser.add_argument('--num_kernels', type=int, default=6, help="for TimesNet's Inception")
     parser.add_argument('--enc_in', type=int, default=1, help='encoder input size')
     parser.add_argument('--dec_in', type=int, default=1, help='decoder input size')
     parser.add_argument('--c_out', type=int, default=1, help='output size')

@@ -8,7 +8,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from data_provider.data_factory import data_provider
-from model import ImageMixer, PatchTST, LSTM, Informer, Autoformer
+from model import ImageMixer, PatchTST, LSTM, Informer, Autoformer, DLinear, TSMixer, TimesNet, Pyraformer
 from utils.metrics import metric
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 
@@ -24,6 +24,10 @@ class Exp(object):
             'LSTM': LSTM,
             'Informer': Informer,
             'Autoformer': Autoformer,
+            'DLinear': DLinear,
+            'TSMixer': TSMixer,
+            'TimesNet': TimesNet,
+            'Pyraformer': Pyraformer,
         }
         self.model = self._build_model().to(self.device)
 

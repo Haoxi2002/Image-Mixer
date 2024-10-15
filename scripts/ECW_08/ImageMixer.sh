@@ -22,10 +22,7 @@ nohup python run.py \
       --patch_size 6 6 \
       --token_mlp_dim 256 \
       --n_blocks 2 \
-      --train_epochs 100 \
-      --batch_size 512 \
-      --patience 50 \
       --dropout 0 \
       --learning_rate 0.001 \
       --use_multi_gpu \
-      > ECW_08_ImageMixer_h96.txt 2>&1 &
+      > ECW_08_ImageMixer.txt 2>&1 &
