@@ -3,7 +3,7 @@
 nohup python run.py \
       --is_training 1 \
       --draw_test 0 \
-      --task_id ECW_ImageMixer \
+      --task_id ECW_ImageMixer_h96 \
       --model ImageMixer \
       --data ECW \
       --dir_path ./data/ECW \
@@ -13,12 +13,10 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-      --h $((48)) \
+      --h $((96)) \
       --lw 1 \
       --expand 2 \
       --channel 1 \
-      --lc 0 0 0 \
-      --bc 1 1 1 \
       --hidden_dim 16 \
       --channel_mlp_dim 32 \
       --patch_size 6 6 \
@@ -30,4 +28,4 @@ nohup python run.py \
       --dropout 0 \
       --learning_rate 0.001 \
       --use_multi_gpu \
-      > ECW_08_ImageMixer.txt 2>&1 &
+      > ECW_08_ImageMixer_h96.txt 2>&1 &
