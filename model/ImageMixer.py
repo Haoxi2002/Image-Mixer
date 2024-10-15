@@ -11,7 +11,6 @@ class Model(nn.Module):
         self.token_dim = (args.h * args.expand // args.patch_size[0]) * (args.seq_len * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
         self.static_embedding = nn.Linear(9, args.pred_len)
-        self.feed_forward = MlpBlock(args.pred_len, args.pred_len * 2)
         self.blocks = nn.ModuleList(
             [MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim) for _
              in range(args.n_blocks)])
@@ -36,7 +35,7 @@ class Model(nn.Module):
         # encoder
         x = self.conv_embedding(x)
         x = einops.rearrange(x, 'b c h w -> b (h w) c')
-        static = self.feed_forward(self.static_embedding(static))
+        static = self.static_embedding(static)
 
         # backbone
         for l in self.blocks:
