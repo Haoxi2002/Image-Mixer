@@ -12,7 +12,7 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-		  --d_model 64 \
+		  --d_model 128 \
 		  --n_heads 8 \
 		  --e_layers 2 \
 		  --d_layers 1 \
