@@ -13,7 +13,6 @@ class Model(nn.Module):
 
     def __init__(self, configs):
         super(Model, self).__init__()
-        self.task_name = configs.task_name
         self.pred_len = configs.pred_len
         self.label_len = configs.label_len
 
@@ -41,7 +40,7 @@ class Model(nn.Module):
                 ConvLayer(
                     configs.d_model
                 ) for l in range(configs.e_layers - 1)
-            ] if configs.distil and ('forecast' in configs.task_name) else None,
+            ] if configs.distil else None,
             norm_layer=torch.nn.LayerNorm(configs.d_model)
         )
         # Decoder

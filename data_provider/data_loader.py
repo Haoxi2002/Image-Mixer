@@ -152,7 +152,7 @@ class Dataset_Basic(Dataset):
                     futures.append(executor.submit(self.data2Pixel, data_x))
                 else:
                     self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
-                    self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
+                    self.data['y_mark'].append(data_stamp[i + self.seq_len - self.label_len:i + self.seq_len + self.pred_len])
             for future in futures:
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
@@ -213,7 +213,7 @@ class Dataset_Basic(Dataset):
                         futures.append(executor.submit(self.data2Pixel, data_x))
                     else:
                         self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
-                        self.data['y_mark'].append(data_stamp[i + self.seq_len:i + self.seq_len + self.pred_len])
+                        self.data['y_mark'].append(data_stamp[i + self.seq_len - self.label_len:i + self.seq_len + self.pred_len])
             for future in futures:
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
