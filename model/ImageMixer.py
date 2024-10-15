@@ -12,7 +12,7 @@ class Model(nn.Module):
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
         self.static_embedding = nn.Linear(9, args.pred_len)
         self.blocks = nn.ModuleList(
-            [MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim) for _
+            [MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _
              in range(args.n_blocks)])
         self.flatten = nn.Flatten(start_dim=-2)
         self.out = nn.Linear(self.token_dim * args.hidden_dim, args.pred_len)

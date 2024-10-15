@@ -20,12 +20,12 @@ class MlpBlock(nn.Module):
 
 
 class MixerBlock(nn.Module):
-    def __init__(self, hidden_dim, token_dim, token_mlp_dim, channel_mlp_dim):
+    def __init__(self, hidden_dim, token_dim, token_mlp_dim, channel_mlp_dim, dropout):
         super(MixerBlock, self).__init__()
         self.layer_norm_1 = nn.LayerNorm(hidden_dim)
-        self.token_mlp = MlpBlock(token_dim, token_mlp_dim)
+        self.token_mlp = MlpBlock(token_dim, token_mlp_dim, dropout)
         self.layer_norm_2 = nn.LayerNorm(hidden_dim)
-        self.channel_mlp = MlpBlock(hidden_dim, channel_mlp_dim)
+        self.channel_mlp = MlpBlock(hidden_dim, channel_mlp_dim, dropout)
 
     def forward(self, x):
         y = self.layer_norm_1(x)  # (bs, patches, c)
