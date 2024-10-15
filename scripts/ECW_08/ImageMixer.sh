@@ -13,7 +13,6 @@ nohup python run.py \
       --pred_len 24  \
 		  --inverse \
       --h $((48)) \
-      --expand 2 \
       --hidden_dim 16 \
       --channel_mlp_dim 32 \
       --patch_size 6 6 \
