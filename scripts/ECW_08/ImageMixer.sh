@@ -28,6 +28,6 @@ nohup python run.py \
       --batch_size 512 \
       --patience 50 \
       --dropout 0 \
-      --learning_rate 0.0001 \
+      --learning_rate 0.001 \
       --use_multi_gpu \
       > ECW_08_ImageMixer.txt 2>&1 &
