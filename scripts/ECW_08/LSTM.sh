@@ -13,6 +13,6 @@ nohup python run.py \
       --pred_len 24 \
 		  --inverse \
 		  --d_model 2048 \
-		  --e_layers 2 \
+		  --e_layers 3 \
       --use_multi_gpu \
       > ECW_08_LSTM.txt 2>&1 &
