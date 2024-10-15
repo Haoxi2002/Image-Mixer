@@ -8,7 +8,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from data_provider.data_factory import data_provider
-from model import ImageMixer, PatchTST
+from model import ImageMixer, PatchTST, LSTM
 from utils.metrics import metric
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 
@@ -21,6 +21,7 @@ class Exp(object):
         self.model_dict = {
             'ImageMixer': ImageMixer,
             'PatchTST': PatchTST,
+            'LSTM': LSTM,
         }
         self.model = self._build_model().to(self.device)
 
@@ -151,7 +152,11 @@ class Exp(object):
         if test:
             print('loading model')
             state_dict = torch.load(os.path.join(self.args.checkpoints, setting) + '/' + 'checkpoint.pth')
-            self.model.load_state_dict(state_dict)
+            # new_state_dict = {}
+            # for k, v in state_dict.items():
+            #     new_key = k.replace('module.', '')  # 移除module前缀
+            #     new_state_dict[new_key] = v
+            # self.model.load_state_dict(new_state_dict)
 
         seq_xs = []
         preds = []
