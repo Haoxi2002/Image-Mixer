@@ -2,8 +2,8 @@
 
 nohup python run.py \
       --is_training 1 \
-      --task_id ksdb_PatchTST \
-      --model PatchTST \
+      --task_id ksdb_MV_DTSF \
+      --model MV_DTSF \
       --data ksdb \
       --dir_path ./data/PPIO \
       --data_path ksdb.csv \
@@ -11,10 +11,9 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-		  --d_model 16 \
-		  --n_heads 4 \
-		  --e_layers 3 \
-		  --d_layers 1 \
-		  --d_ff 128 \
+      --h $((288)) \
+      --lw 2 \
+      --expand 1 \
+      --channel 1 \
       --use_multi_gpu \
-      > Eksdb_08_PatchTST.txt 2>&1 &
+      > ksdb_MV_DTSF.txt 2>&1 &

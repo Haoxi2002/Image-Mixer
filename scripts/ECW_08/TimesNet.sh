@@ -18,6 +18,6 @@ nohup python run.py \
 		  --d_layers 1 \
 		  --factor 3 \
 		  --d_ff 32 \
-		   --top_k 5 \
+		  --top_k 5 \
       --use_multi_gpu \
       > ECW_08_TimesNet.txt 2>&1 &

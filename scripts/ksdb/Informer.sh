@@ -2,8 +2,8 @@
 
 nohup python run.py \
       --is_training 1 \
-      --task_id ksdb_PatchTST \
-      --model PatchTST \
+      --task_id ksdb_Informer \
+      --model Informer \
       --data ksdb \
       --dir_path ./data/PPIO \
       --data_path ksdb.csv \
@@ -11,10 +11,11 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-		  --d_model 16 \
-		  --n_heads 4 \
-		  --e_layers 3 \
+		  --d_model 512 \
+		  --n_heads 8 \
+		  --e_layers 2 \
 		  --d_layers 1 \
-		  --d_ff 128 \
+		  --d_ff 2048 \
+		  --factor 5 \
       --use_multi_gpu \
-      > Eksdb_08_PatchTST.txt 2>&1 &
+      > ksdb_Informer.txt 2>&1 &
