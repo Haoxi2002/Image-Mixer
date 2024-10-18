@@ -15,6 +15,8 @@ class Model(nn.Module):
         h0 = torch.zeros(self.num_layers, x_enc.size(0), self.hidden_dim).to(x_enc.device)
         c0 = torch.zeros(self.num_layers, x_enc.size(0), self.hidden_dim).to(x_enc.device)
 
+        self.lstm.flatten_parameters()
+
         out, (hn, cn) = self.lstm(x_enc, (h0, c0))
         predictions = []
         input_seq = out[:, -1, :].unsqueeze(1)
