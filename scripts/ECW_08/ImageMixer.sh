@@ -2,7 +2,6 @@
 
 nohup python run.py \
       --is_training 1 \
-      --draw_test 1 \
       --task_id ECW_ImageMixer \
       --model ImageMixer \
       --data ECW \
