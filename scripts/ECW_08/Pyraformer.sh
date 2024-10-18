@@ -17,6 +17,5 @@ nohup python run.py \
 		  --e_layers 2 \
 		  --d_layers 1 \
 		  --d_ff 512 \
-      --dropout 0 \
       --use_multi_gpu \
       > ECW_08_Pyraformer.txt 2>&1 &
