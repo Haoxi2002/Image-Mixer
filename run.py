@@ -58,7 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('--enc_in', type=int, default=1, help='encoder input size')
     parser.add_argument('--dec_in', type=int, default=1, help='decoder input size')
     parser.add_argument('--c_out', type=int, default=1, help='output size')
-    parser.add_argument('--d_model', type=int, default=64, help='dimension of model')
+    parser.add_argument('--d_model', type=int, default=128, help='dimension of model')
     parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
     parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
     parser.add_argument('--d_layers', type=int, default=1, help='num of decoder layers')
