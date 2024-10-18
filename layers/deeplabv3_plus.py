@@ -123,10 +123,10 @@ class DeepLab(nn.Module):
                  args=None):
         super(DeepLab, self).__init__()
         modelSizeDict = {
-            'ECW': 8,
-            'ksdb': 4,
-            'bzmodb': 8,
-            'mgtvdb': 8
+            'ECW': 2,
+            'ksdb': 2,
+            'bzmodb': 2,
+            'mgtvdb': 2
         }
         modelSize = modelSizeDict[args.data]
 
