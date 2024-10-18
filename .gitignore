@@ -177,3 +177,5 @@ RES/
 cal.py
 run_ECW.py
 run_PPIO.py
+/scripts/find_best_config.sh
+output.csv
