@@ -12,10 +12,11 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-		  --d_model 32 \
-		  --n_heads 8 \
 		  --e_layers 2 \
-		  --d_layers 1 \
-		  --d_ff 128 \
+      --d_layers 1 \
+      --factor 3 \
+		  --d_model 512 \
+		  --n_heads 8 \
+		  --d_ff 2048 \
       --use_multi_gpu \
       > ECW_08_Autoformer.txt 2>&1 &

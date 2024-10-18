@@ -12,10 +12,11 @@ nohup python run.py \
       --label_len 24 \
       --pred_len 24  \
 		  --inverse \
-		  --d_model 128 \
+		  --d_model 512 \
 		  --n_heads 8 \
 		  --e_layers 2 \
 		  --d_layers 1 \
-		  --d_ff 512 \
+		  --d_ff 2048 \
+		  --factor 5 \
       --use_multi_gpu \
       > ECW_08_KAE_Informer.txt 2>&1 &
