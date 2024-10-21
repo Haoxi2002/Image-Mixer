@@ -2,11 +2,11 @@
 
 nohup python run.py \
       --is_training 1 \
-      --task_id ksdb_PatchTST \
+      --task_id mgtvdb_PatchTST \
       --model PatchTST \
-      --data ksdb \
+      --data mgtvdb \
       --dir_path ./data/PPIO \
-      --data_path ksdb.csv \
+      --data_path mgtvdb.csv \
       --freq 5min \
       --seq_len 288 \
       --label_len 144 \
@@ -17,4 +17,4 @@ nohup python run.py \
 		  --d_layers 1 \
 		  --d_ff 128 \
       --use_multi_gpu \
-      > ksdb_08_PatchTST.txt 2>&1 &
+      > mgtvdb_08_PatchTST.txt 2>&1 &
