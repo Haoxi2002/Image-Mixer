@@ -181,3 +181,5 @@ run_PPIO.py
 output.csv
 output_ECW.csv
 output_ksdb.csv
+output_bzmo.csv
+output_mgtv.csv
