@@ -17,5 +17,6 @@ nohup python run.py \
 		  --d_layers 1 \
 		  --d_ff 2048 \
 		  --factor 5 \
+		  --batch_size 256 \
       --use_multi_gpu \
       > mgtvdb_Informer.txt 2>&1 &
