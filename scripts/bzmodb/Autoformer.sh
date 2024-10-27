@@ -17,5 +17,6 @@ nohup python run.py \
 		  --d_model 512 \
 		  --n_heads 8 \
 		  --d_ff 2048 \
+		  --batch_size 128 \
       --use_multi_gpu \
       > bzmodb_Autoformer.txt 2>&1 &
