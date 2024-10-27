@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_ImageMixer \
       --model ImageMixer \
       --data ECW \
@@ -27,7 +27,7 @@ nohup python run.py \
       > ECW_newapp_ImageMixer.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_ImageMixer \
       --model ImageMixer \
       --data ECW \
@@ -53,7 +53,7 @@ nohup python run.py \
       > ECW_newmac_ImageMixer.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_ImageMixer \
       --model ImageMixer \
       --data ECW \

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_MV_DTSF \
       --model MV_DTSF \
       --data ECW \
@@ -20,7 +20,7 @@ nohup python run.py \
       > ECW_newapp_MV_DTSF.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_MV_DTSF \
       --model MV_DTSF \
       --data ECW \
@@ -39,7 +39,7 @@ nohup python run.py \
       > ECW_newmac_MV_DTSF.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_MV_DTSF \
       --model MV_DTSF \
       --data ECW \

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_LSTM \
       --model LSTM \
       --data ECW \
@@ -18,7 +18,7 @@ nohup python run.py \
       > ECW_newapp_LSTM.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_LSTM \
       --model LSTM \
       --data ECW \
@@ -35,7 +35,7 @@ nohup python run.py \
       > ECW_newmac_LSTM.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_LSTM \
       --model LSTM \
       --data ECW \

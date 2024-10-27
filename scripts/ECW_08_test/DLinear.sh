@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_DLinear \
       --model DLinear \
       --data ECW \
@@ -21,7 +21,7 @@ nohup python run.py \
       > ECW_newapp_DLinear.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_DLinear \
       --model DLinear \
       --data ECW \
@@ -41,7 +41,7 @@ nohup python run.py \
       > ECW_newmac_DLinear.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_DLinear \
       --model DLinear \
       --data ECW \

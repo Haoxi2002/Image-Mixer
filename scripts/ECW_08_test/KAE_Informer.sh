@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_KAE_Informer \
       --model KAE_Informer \
       --data ECW \
@@ -22,7 +22,7 @@ nohup python run.py \
       > ECW_newapp_KAE_Informer.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_KAE_Informer \
       --model KAE_Informer \
       --data ECW \
@@ -43,7 +43,7 @@ nohup python run.py \
       > ECW_newmac_KAE_Informer.txt 2>&1 &
 
 nohup python run.py \
-      --is_training 1 \
+      --is_training 0 \
       --task_id ECW_KAE_Informer \
       --model KAE_Informer \
       --data ECW \
