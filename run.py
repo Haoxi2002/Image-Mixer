@@ -76,7 +76,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
     parser.add_argument('--train_epochs', type=int, default=100, help='train epochs')
     parser.add_argument('--batch_size', type=int, default=512, help='batch size of train input data')
-    parser.add_argument('--patience', type=int, default=50, help='patience for early stop')
+    parser.add_argument('--patience', type=int, default=20, help='patience for early stop')
     parser.add_argument('--dropout', type=float, default=0.15, help='dropout rate')
     parser.add_argument('--learning_rate', type=float, default=0.003, help='optimizer learning rate')
     parser.add_argument('--lradj', type=str, default='optim', help='adjust learning rate')
