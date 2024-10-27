@@ -17,4 +17,4 @@ nohup python run.py \
 		  --d_layers 1 \
 		  --d_ff 128 \
       --use_multi_gpu \
-      > ksdb_08_PatchTST.txt 2>&1 &
+      > ksdb_PatchTST.txt 2>&1 &

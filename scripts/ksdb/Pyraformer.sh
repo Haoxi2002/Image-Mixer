@@ -16,5 +16,6 @@ nohup python run.py \
 		  --e_layers 2 \
 		  --d_layers 1 \
 		  --d_ff 2048 \
+		  --batch_size 256 \
       --use_multi_gpu \
       > ksdb_Pyraformer.txt 2>&1 &
