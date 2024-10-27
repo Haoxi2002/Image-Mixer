@@ -18,5 +18,6 @@ nohup python run.py \
 		  --factor 3 \
 		  --d_ff 32 \
 		  --top_k 5 \
+		  --batch_size 64 \
       --use_multi_gpu \
       > mgtvdb_TimesNet.txt 2>&1 &
