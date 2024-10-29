@@ -11,15 +11,15 @@ nohup python run.py \
       --seq_len 288 \
       --label_len 144 \
       --pred_len 288  \
-      --h $((144)) \
-      --lw 4 \
+      --h $((288)) \
+      --lw 3 \
       --expand 1 \
-      --hidden_dim 16 \
-      --channel_mlp_dim 64 \
-      --patch_size 48 48 \
-      --token_mlp_dim 64 \
-      --n_blocks 9 \
-      --dropout 0 \
+      --hidden_dim 8 \
+      --channel_mlp_dim 512 \
+      --patch_size 16 16 \
+      --token_mlp_dim 256 \
+      --n_blocks 10 \
+      --dropout 0.15 \
       --learning_rate 0.001 \
       --use_multi_gpu \
       > mgtvdb_ImageMixer.txt 2>&1 &
