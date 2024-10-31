@@ -169,6 +169,7 @@ result_long_term_forecast.txt
 scripts/gen.py
 RES/
 
+/logs
 /command.txt
 /gen.py
 /result_long_term_forecast.csv

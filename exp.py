@@ -174,6 +174,7 @@ class Exp(object):
         if self.args.draw_test and not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
+        start_time = time.time()
         self.model.eval()
         with torch.no_grad():
             for i, (seq_x, seq_y, fig_x, static, seq_x_mark, seq_y_mark) in enumerate(test_loader):
@@ -213,6 +214,7 @@ class Exp(object):
                     # visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.png'))
 
+        print('Inference time: {:.4f}s, Model parameters: {:.4f}MB'.format((time.time() - start_time) / len(test_loader), sum(p.numel() for p in self.model.parameters())))
         seq_xs = np.asarray(seq_xs)
         preds = np.array(preds)
         trues = np.array(trues)
