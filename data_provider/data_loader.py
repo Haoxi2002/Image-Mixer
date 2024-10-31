@@ -169,7 +169,7 @@ class Dataset_Basic(Dataset):
     def __read_data_ECW__(self):
         df_raw = pd.read_csv(str(os.path.join(self.dir_path, self.data_path)))
         num_train = int(len(df_raw) * 0.6)  # short-term TSF
-        num_test = int(len(df_raw) * 0.2) if self.args.is_training else len(df_raw)
+        num_test = int(len(df_raw) * 0.2) if "08" in self.data_path else len(df_raw)
         num_vali = len(df_raw) - num_train - num_test
         border1s = [0, num_train, len(df_raw) - num_test]
         border2s = [num_train, num_train + num_vali, len(df_raw)]
