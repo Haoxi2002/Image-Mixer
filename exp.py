@@ -216,7 +216,7 @@ class Exp(object):
                     # visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.png'))
 
-        print('Inference time: {:.1f}ms, Model parameters: {:.2f} MB'.format(np.mean(times[10000:]) * 1000, sum(p.numel() for p in self.model.parameters()) * 4 / (1024 ** 2)))
+        print('Inference time: {:.1f}ms, Model parameters: {:.2f} MB'.format(np.mean(times[1000:]) * 1000, sum(p.numel() for p in self.model.parameters()) * 4 / (1024 ** 2)))
         seq_xs = np.asarray(seq_xs)
         preds = np.array(preds)
         trues = np.array(trues)
