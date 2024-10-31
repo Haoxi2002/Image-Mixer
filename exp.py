@@ -174,10 +174,11 @@ class Exp(object):
         if self.args.draw_test and not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        start_time = time.time()
+        times = []
         self.model.eval()
         with torch.no_grad():
             for i, (seq_x, seq_y, fig_x, static, seq_x_mark, seq_y_mark) in enumerate(test_loader):
+                start_time = time.time()
                 seq_y = seq_y.float().to(self.device)
                 if self.model_type == 0:
                     fig_x = fig_x.float().to(self.device)
@@ -190,6 +191,7 @@ class Exp(object):
                     dec_inp = torch.zeros_like(seq_y).float()
                     dec_inp = torch.cat([seq_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
                     y_pred = self.model(seq_x, seq_x_mark, dec_inp, seq_y_mark)
+                times.append(time.time() - start_time)
                 outputs = y_pred.cpu().detach().numpy()
                 batch_y = seq_y.cpu().detach().numpy()
 
@@ -214,7 +216,7 @@ class Exp(object):
                     # visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.png'))
 
-        print('Inference time: {:.4f}s, Model parameters: {:.2f} MB'.format((time.time() - start_time) / len(test_loader), sum(p.numel() for p in self.model.parameters()) * 4 / (1024 ** 2)))
+        print('Inference time: {:.1f}ms, Model parameters: {:.2f} MB'.format(np.mean(times[10000:]) * 1000, sum(p.numel() for p in self.model.parameters()) * 4 / (1024 ** 2)))
         seq_xs = np.asarray(seq_xs)
         preds = np.array(preds)
         trues = np.array(trues)
