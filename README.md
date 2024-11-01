@@ -1,6 +1,6 @@
-## ImageMixer: An Image Driven all-MLP Architecture for Time Series Forecasting
+## N2V: An Image-Driven Lightweight Model for Network Key Indicators Extreme Forecasting
 
-This is the origin Pytorch implementation of Image-Mixer.
+This is the origin Pytorch implementation of N2V.
 
 ### Requirements
 
