@@ -1,9 +1,0 @@
-Args: Namespace(is_training=0, draw_test=1, task_id='ECW_MV_DTSF', model='MV_DTSF', data='ECW', dir_path='./data/ECW', data_path='ECW_newapp.csv', features='S', target='mps', freq='h', checkpoints='./checkpoints/', seq_len=48, label_len=24, pred_len=24, inverse=True, h=24, lw=1.0, expand=1, channel=3, lc=(0, 0, 0), bc=(1, 1, 1), hidden_dim=16, channel_mlp_dim=128, patch_size=(8, 8), token_mlp_dim=256, n_blocks=6, top_k=5, num_kernels=6, enc_in=1, dec_in=1, c_out=1, d_model=512, n_heads=8, e_layers=2, d_layers=1, d_ff=2048, moving_avg=25, factor=1, distil=True, embed='timeF', activation='gelu', num_workers=10, train_epochs=100, batch_size=512, patience=20, dropout=0.15, learning_rate=0.003, lradj='optim', use_gpu=True, gpu=0, use_multi_gpu=True, devices='0,1', device_ids=[0, 1], model_type=0)
-Use GPU: cuda:0
-AdaFactor 0.125 input_channel 4
->>>>>>>>>>start testing : ECW_MV_DTSF_MV_DTSF_ECW_S_seq48_pred24_hd16_cmd128_ps(8, 8)_tmd256_nb6_drop0.15_lr0.003>>>>>>>>>>>>>>>>>>>>
-test 605
-loading model
-test shape: (605, 24, 1) (605, 24, 1)
-mean_mse:0.4506116509437561, var_mse:0.11462023854255676, top_mse:1.1530821323394775, bottom_mse:0.12468221038579941, peak_mse:0.6388821601867676
-mean_mae:0.5307333469390869, var_mae:0.04939865320920944, top_mae:0.9306910037994385, bottom_mae:0.30658015608787537, peak_mae:0.6186355948448181
