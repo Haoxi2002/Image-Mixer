@@ -194,16 +194,18 @@ class Exp(object):
                 times.append(time.time() - start_time)
                 outputs = y_pred.cpu().detach().numpy()
                 batch_y = seq_y.cpu().detach().numpy()
+                seq_x = seq_x.cpu().detach().numpy()
 
                 if self.args.inverse:
                     shape = outputs.shape
                     outputs = test_data.inverse_transform(outputs.squeeze(0)).reshape(shape)
                     batch_y = test_data.inverse_transform(batch_y.squeeze(0)).reshape(shape)
+                    seq_x = test_data.inverse_transform(seq_x.squeeze(0)).reshape(shape)
 
                 pred = outputs
                 true = batch_y
 
-                seq_xs.append(seq_x.cpu().detach().numpy())
+                seq_xs.append(seq_x)
                 preds.append(pred)
                 trues.append(true)
                 if self.args.draw_test and i % 100 == 0:
