@@ -52,8 +52,8 @@ def adjust_learning_rate(optimizer, epoch, args, scheduler=None, printnot=True):
 
 def visual(true, pred, name):
     plt.figure()
-    plt.plot(true, label='GroundTruth', linewidth=2)
     plt.plot(pred, label='Prediction', linewidth=2, linestyle='--')
+    plt.plot(true, label='GroundTruth', linewidth=2)
     plt.legend()
     plt.savefig(name, bbox_inches='tight')
     plt.close()
