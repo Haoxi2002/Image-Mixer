@@ -19,7 +19,7 @@ Dependencies can be installed using the following command:
 ### Data
 
 The ECW dataset used in the paper can be downloaded in the repo [ECWDataset](https://github.com/hsy23/ECWDataset). 
-The required data files should be put into data folder `./data/ECW/`. 
+The required data files has already been put into data folder `./data/ECW/`. 
 
 We only use the `bw_upload` columns.
 
