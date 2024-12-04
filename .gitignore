@@ -160,6 +160,10 @@ data_loader_all.py
 
 data/*
 !data/.gitkeep
+!data/ECW/ECW_08.csv
+!data/PPIO/bzmodb.csv
+!data/PPIO/ksdb.csv
+!data/PPIO/mgtvdb.csv
 checkpoints/
 predicts/
 results/
