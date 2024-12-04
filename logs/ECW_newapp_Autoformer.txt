@@ -1,8 +1,0 @@
-Args: Namespace(is_training=0, draw_test=1, task_id='ECW_Autoformer', model='Autoformer', data='ECW', dir_path='./data/ECW', data_path='ECW_newapp.csv', features='S', target='mps', freq='h', checkpoints='./checkpoints/', seq_len=48, label_len=24, pred_len=24, inverse=True, h=24, lw=1, expand=1, channel=3, lc=(0, 0, 0), bc=(1, 1, 1), hidden_dim=16, channel_mlp_dim=128, patch_size=(8, 8), token_mlp_dim=256, n_blocks=6, top_k=5, num_kernels=6, enc_in=1, dec_in=1, c_out=1, d_model=512, n_heads=8, e_layers=2, d_layers=1, d_ff=2048, moving_avg=25, factor=3, distil=True, embed='timeF', activation='gelu', num_workers=10, train_epochs=100, batch_size=512, patience=20, dropout=0.15, learning_rate=0.003, lradj='optim', use_gpu=True, gpu=0, use_multi_gpu=True, devices='0,1', device_ids=[0, 1], model_type=1)
-Use GPU: cuda:0
->>>>>>>>>>start testing : ECW_Autoformer_Autoformer_ECW_S_seq48_pred24_d_model512_n_heads8_e_layers2_d_ff2048_drop0.15_lr0.003>>>>>>>>>>>>>>>>>>>>
-test 605
-loading model
-test shape: (605, 24, 1) (605, 24, 1)
-mean_mse:11.515768051147461, var_mse:89.79004669189453, top_mse:24.24127960205078, bottom_mse:5.8320698738098145, peak_mse:15.036674499511719
-mean_mae:2.7203474044799805, var_mae:1.6022694110870361, top_mae:4.180661201477051, bottom_mae:2.0035276412963867, peak_mae:3.0920944213867188
