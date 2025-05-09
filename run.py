@@ -14,7 +14,7 @@ if __name__ == '__main__':
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    parser = argparse.ArgumentParser(description='Multimodal TSF')
+    parser = argparse.ArgumentParser(description='ImageMixer')
 
     # basic config
     parser.add_argument('--is_training', type=int, default=1, help='1 for train or 0 for test')
@@ -23,20 +23,20 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
 
     # data loader
-    parser.add_argument('--data', type=str, default='ECW', help='data type')
-    parser.add_argument('--dir_path', type=str, default='./data/ECW', help='dir path')
-    parser.add_argument('--data_path', type=str, default='ECW_08.csv', help='data file name')
+    parser.add_argument('--data', type=str, default='ETTh1', help='data type')
+    parser.add_argument('--dir_path', type=str, default='./data/ETT-small', help='dir path')
+    parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file name')
     parser.add_argument('--features', type=str, default='S',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
-    parser.add_argument('--target', type=str, default='mps', help='target feature in S or MS task')
+    parser.add_argument('--target', type=str, default='OT', help='target feature in S or MS task')
     parser.add_argument('--freq', type=str, default='h',
                         help='freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h ]')
     parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
 
     # forecasting task
-    parser.add_argument('--seq_len', type=int, default=48, help='input sequence length')
-    parser.add_argument('--label_len', type=int, default=24, help='start token length')
-    parser.add_argument('--pred_len', type=int, default=24, help='prediction sequence length')
+    parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
+    parser.add_argument('--label_len', type=int, default=48, help='start token length')
+    parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
     parser.add_argument('--inverse', action='store_true', default=False, help='inverse output data')
 
     # fig config

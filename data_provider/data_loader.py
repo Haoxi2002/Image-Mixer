@@ -36,12 +36,8 @@ class Dataset_Basic(Dataset):
         self.lc = self.args.lc
         self.expand = self.args.expand
         self.model_type = self.args.model_type
-        self.divide = 12
 
-        if 'ECW' in self.data_path:
-            self.__read_data_ECW__()
-        else:
-            self.__read_data__()
+        self.__read_data__()
 
     def data2Pixel(self, dataXIn, draw_type='opencv'):
         assert draw_type in ['matplotlib', 'opencv', 'sampling']
@@ -153,67 +149,6 @@ class Dataset_Basic(Dataset):
                 else:
                     self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
                     self.data['y_mark'].append(data_stamp[i + self.seq_len - self.label_len:i + self.seq_len + self.pred_len])
-            for future in futures:
-                self.data['fig'].append(future.result())
-        if self.model_type == 0:
-            self.static = np.concatenate([np.array(self.data['max'])[:, :, np.newaxis],
-                                          np.array(self.data['min'])[:, :, np.newaxis],
-                                          np.array(self.data['median'])[:, :, np.newaxis],
-                                          np.array(self.data['mean'])[:, :, np.newaxis],
-                                          np.array(self.data['25th'])[:, :, np.newaxis],
-                                          np.array(self.data['75th'])[:, :, np.newaxis],
-                                          np.array(self.data['ptp'])[:, :, np.newaxis],
-                                          np.array(self.data['std'])[:, :, np.newaxis],
-                                          np.array(self.data['var'])[:, :, np.newaxis]], axis=2)
-
-    def __read_data_ECW__(self):
-        df_raw = pd.read_csv(str(os.path.join(self.dir_path, self.data_path)))
-        num_train = int(len(df_raw) * 0.6)  # short-term TSF
-        num_test = int(len(df_raw) * 0.2) if "08" in self.data_path else len(df_raw)
-        num_vali = len(df_raw) - num_train - num_test
-        border1s = [0, num_train, len(df_raw) - num_test]
-        border2s = [num_train, num_train + num_vali, len(df_raw)]
-        border1 = border1s[self.set_type]
-        border2 = border2s[self.set_type]
-        cols_data = df_raw.columns[1:]
-        df_data = df_raw[cols_data]
-
-        train_data = df_data[border1s[0]:border2s[0]]
-        self.scaler = MinMaxScaler()
-        self.scaler.fit(train_data.values.reshape(-1, 1))
-        shape = df_data.values.shape
-        data = self.scaler.transform(df_data.values.reshape(-1, 1)).reshape(shape)
-
-        data = data[border1:border2]
-        self.data = defaultdict(list)
-        df_stamp = df_raw[['date']][border1:border2]
-        df_stamp['date'] = pd.to_datetime(df_stamp.date)
-        df_stamp['month'] = df_stamp.date.astype(object).apply(lambda row: row.month)
-        df_stamp['day'] = df_stamp.date.astype(object).apply(lambda row: row.day)
-        df_stamp['weekday'] = df_stamp.date.astype(object).apply(lambda row: row.weekday())
-        df_stamp['hour'] = df_stamp.date.astype(object).apply(lambda row: row.hour)
-        data_stamp = df_stamp.drop(columns=['date']).values
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = []
-            for device in range(data.shape[1]):
-                for i in range(0, len(data) - self.seq_len - self.pred_len + 1, self.divide):
-                    data_x = data[i:i + self.seq_len, device].reshape(-1, 1)
-                    self.data['x'].append(data_x)
-                    self.data['y'].append(data[i + self.seq_len:i + self.seq_len + self.pred_len, device].reshape(-1, 1))
-                    if self.model_type == 0:
-                        self.data['max'].append(np.amax(data_x, axis=0))
-                        self.data['min'].append(np.amin(data_x, axis=0))
-                        self.data['median'].append(np.median(data_x, axis=0))
-                        self.data['mean'].append(np.mean(data_x, axis=0))
-                        self.data['25th'].append(np.percentile(data_x, 25, axis=0))
-                        self.data['75th'].append(np.percentile(data_x, 75, axis=0))
-                        self.data['ptp'].append(np.ptp(data_x, axis=0))
-                        self.data['std'].append(np.std(data_x, axis=0))
-                        self.data['var'].append(np.var(data_x, axis=0))
-                        futures.append(executor.submit(self.data2Pixel, data_x))
-                    else:
-                        self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
-                        self.data['y_mark'].append(data_stamp[i + self.seq_len - self.label_len:i + self.seq_len + self.pred_len])
             for future in futures:
                 self.data['fig'].append(future.result())
         if self.model_type == 0:

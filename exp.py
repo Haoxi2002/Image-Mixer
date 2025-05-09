@@ -8,8 +8,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from data_provider.data_factory import data_provider
-from model import ImageMixer, PatchTST, LSTM, Informer, Autoformer, DLinear, TSMixer, TimesNet, Pyraformer, MV_DTSF, \
-    KAE_Informer
+from model import ImageMixer, PatchTST, LSTM, Informer, Autoformer, DLinear, TSMixer, TimesNet, Pyraformer, MV_DTSF
 from utils.metrics import metric
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
 
@@ -29,8 +28,7 @@ class Exp(object):
             'TSMixer': TSMixer,
             'TimesNet': TimesNet,
             'Pyraformer': Pyraformer,
-            'MV_DTSF': MV_DTSF,
-            'KAE_Informer': KAE_Informer,
+            'MV_DTSF': MV_DTSF
         }
         self.model = self._build_model().to(self.device)
 
@@ -165,7 +163,7 @@ class Exp(object):
             # for k, v in state_dict.items():
             #     new_key = k.replace('module.', '')  # 移除module前缀
             #     new_state_dict[new_key] = v
-            # self.model.load_state_dict(new_state_dict)
+            self.model.load_state_dict(state_dict)
 
         seq_xs = []
         preds = []
@@ -209,7 +207,7 @@ class Exp(object):
                 preds.append(pred)
                 trues.append(true)
                 if self.args.draw_test and i % 100 == 0:
-                    input = seq_x.cpu().detach().numpy()
+                    input = seq_x
                     if self.args.inverse:
                         shape = input.shape
                         input = test_data.inverse_transform(input.squeeze(0)).reshape(shape)
