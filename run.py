@@ -74,18 +74,18 @@ if __name__ == '__main__':
 
     # optimization
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
-    parser.add_argument('--train_epochs', type=int, default=100, help='train epochs')
+    parser.add_argument('--train_epochs', type=int, default=20, help='train epochs')
     parser.add_argument('--batch_size', type=int, default=512, help='batch size of train input data')
-    parser.add_argument('--patience', type=int, default=20, help='patience for early stop')
+    parser.add_argument('--patience', type=int, default=3, help='patience for early stop')
     parser.add_argument('--dropout', type=float, default=0.15, help='dropout rate')
     parser.add_argument('--learning_rate', type=float, default=0.003, help='optimizer learning rate')
-    parser.add_argument('--lradj', type=str, default='optim', help='adjust learning rate')
+    parser.add_argument('--lradj', type=str, default='type1', help='adjust learning rate')
 
     # GPU
     parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu id')
     parser.add_argument('--use_multi_gpu', action='store_true', default=False, help='use multiple gpus')
-    parser.add_argument('--devices', type=str, default='1', help='gpu ids of multiple gpus')
+    parser.add_argument('--devices', type=str, default='0,1,2', help='gpu ids of multiple gpus')
 
     args = parser.parse_args()
     args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
