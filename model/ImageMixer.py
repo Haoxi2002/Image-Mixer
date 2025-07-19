@@ -27,7 +27,7 @@ class Model(nn.Module):
     """
 
     def forward(self, x, static):
-        bc, f_c, h, w = x.shape
+        bs, f_c, h, w = x.shape
         # CI
         x = torch.reshape(x, (-1, self.args.channel, h, w))
         static = torch.reshape(static, (-1, 1, 9))
@@ -51,7 +51,7 @@ class Model(nn.Module):
 
         # de CI
         x = torch.transpose(x, 1, 2)
-        x = torch.reshape(x, (bc, f_c // self.args.channel, self.args.pred_len))
+        x = torch.reshape(x, (bs, f_c // self.args.channel, self.args.pred_len))
         x = torch.transpose(x, 1, 2)
 
         return x.float()

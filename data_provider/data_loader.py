@@ -1,3 +1,4 @@
+import argparse
 import os
 from collections import defaultdict
 import concurrent.futures
@@ -7,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from torch.utils.data import Dataset
 
 
@@ -48,7 +49,8 @@ class Dataset_Basic(Dataset):
         imgX = np.zeros([feature * self.channel, lenX * self.expand, self.h * self.expand], dtype=np.float32)
         for i in range(feature):
             if draw_type == 'matplotlib':
-                canvas = FigureCanvasAgg(plt.figure(figsize=(lenX / 100 * self.expand, self.h / 100 * self.expand), facecolor=self.bc))
+                canvas = FigureCanvasAgg(
+                    plt.figure(figsize=(lenX / 100 * self.expand, self.h / 100 * self.expand), facecolor=self.bc))
                 plt.plot(dataX[i], linewidth=self.lw, color=self.lc)
                 plt.gca().spines['top'].set_visible(False)
                 plt.gca().spines['right'].set_visible(False)
@@ -67,29 +69,27 @@ class Dataset_Basic(Dataset):
                     imgX[i * self.channel:(i + 1) * self.channel, :img.shape[1], :] = np.transpose(img, (2, 1, 0))
                 plt.close()
             else:
-                img = (np.ones((self.h * self.expand, lenX * self.expand, 3), dtype=np.uint8) * (int(self.bc[0] * 255), int(self.bc[1] * 255), int(self.bc[2] * 255))).astype(np.uint8)
-                data_line = 1 - (dataX[i] - np.min(dataX[i])) / (np.max(dataX[i]) - np.min(dataX[i]))
+                img = (np.ones((self.h * self.expand, lenX * self.expand, 3), dtype=np.uint8) * (
+                    int(self.bc[0] * 255), int(self.bc[1] * 255), int(self.bc[2] * 255))).astype(np.uint8)
+                if np.max(dataX[i]) == np.min(dataX[i]):
+                    data_line = np.ones(len(dataX[i])) - 0.5
+                else:
+                    data_line = 1 - (dataX[i] - np.min(dataX[i])) / (np.max(dataX[i]) - np.min(dataX[i]))
                 if draw_type == 'opencv':
                     for j in range(lenX - 1):
                         pt1 = (int(j * self.expand), round(data_line[j] * (self.h * self.expand - 1)))
                         pt2 = (int((j + 1) * self.expand), round(data_line[j + 1] * (self.h * self.expand - 1)))
-                        cv2.line(img, pt1, pt2, (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255)), self.lw if type(self.lw) == int else 1)
+                        cv2.line(img, pt1, pt2, (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255)),
+                                 self.lw if isinstance(self.lw, int) else 1)
                 else:  # if draw_type == 'sampling'  self.lw is not used
                     data_line = np.round(data_line * (self.h - 1)).astype(int)
                     for j in range(self.expand):
-                        img[np.repeat(data_line, self.expand) * self.expand + j,
-                        np.arange(len(data_line) * self.expand), :] = (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255))
+                        img[np.repeat(data_line, self.expand) * self.expand + j, np.arange(len(data_line) * self.expand), :] = (int(self.lc[0] * 255), int(self.lc[1] * 255), int(self.lc[2] * 255))
                 if self.channel == 1:
                     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     imgX[i, :gray_img.shape[1], :] = np.transpose(np.expand_dims(gray_img, axis=0) / 255, (0, 2, 1))
                 else:  # self.channel == 3:
                     imgX[i * self.channel:(i + 1) * self.channel, :, :] = np.transpose(img / 255, (2, 1, 0))
-            # imgX[:, :, self.h * self.expand // 2 - 1] = np.expand_dims(self.lc, axis=1)
-            # imgX[:, :, self.h * self.expand // 4 * 3 - 1] = np.expand_dims(self.lc, axis=1)
-            # imgX[:, :, self.h * self.expand // 4 - 1] = np.expand_dims(self.lc, axis=1)
-            # imgX[:, lenX * self.expand // 2 - 1, :] = np.expand_dims(self.lc, axis=1)
-            # imgX[:, lenX * self.expand // 4 * 3 - 1, :] = np.expand_dims(self.lc, axis=1)
-            # imgX[:, lenX * self.expand // 4 - 1, :] = np.expand_dims(self.lc, axis=1)
         return np.transpose(imgX, (0, 2, 1))
 
     def __read_data__(self):
@@ -114,9 +114,8 @@ class Dataset_Basic(Dataset):
 
         train_data = df_data[border1s[0]:border2s[0]]
         self.scaler = StandardScaler()
-        self.scaler.fit(train_data.values.reshape(-1, 1))
-        shape = df_data.values.shape
-        data = self.scaler.transform(df_data.values.reshape(-1, 1)).reshape(shape)
+        self.scaler.fit(train_data.values)
+        data = self.scaler.transform(df_data.values)
 
         data = data[border1:border2]
         self.data = defaultdict(list)
@@ -129,7 +128,7 @@ class Dataset_Basic(Dataset):
         df_stamp['minute'] = df_stamp.date.astype(object).apply(lambda row: row.minute)
         df_stamp['minute'] = df_stamp.minute.map(lambda x: x // 5)
         data_stamp = df_stamp.drop(columns=['date']).values
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()-4) as executor:
             futures = []
             for i in range(len(data) - self.seq_len - self.pred_len + 1):
                 data_x = data[i:i + self.seq_len]
@@ -148,7 +147,8 @@ class Dataset_Basic(Dataset):
                     futures.append(executor.submit(self.data2Pixel, data_x))
                 else:
                     self.data['x_mark'].append(data_stamp[i:i + self.seq_len])
-                    self.data['y_mark'].append(data_stamp[i + self.seq_len - self.label_len:i + self.seq_len + self.pred_len])
+                    self.data['y_mark'].append(
+                        data_stamp[i + self.seq_len - self.label_len:i + self.seq_len + self.pred_len])
             for future in futures:
                 self.data['fig'].append(future.result())
         if self.model_type == 0:
@@ -166,10 +166,42 @@ class Dataset_Basic(Dataset):
         if self.model_type == 0:
             return self.data['x'][index], self.data['y'][index], self.data['fig'][index], self.static[index], 0, 0
         else:
-            return self.data['x'][index], self.data['y'][index], 0, 0, self.data['x_mark'][index], self.data['y_mark'][index]
+            return self.data['x'][index], self.data['y'][index], 0, 0, self.data['x_mark'][index], self.data['y_mark'][
+                index]
 
     def __len__(self):
         return len(self.data['x'])
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='TimesNet')
+    args = parser.parse_args()
+    args.is_training = 1
+    args.dir_path = '../data/ETT-small/'
+    args.data_path = 'ETTm1.csv'
+    args.seq_len = 96
+    args.label_len = 48
+    args.pred_len = 96
+    args.target = 'OT'
+    args.features = 'M'
+    args.h = 24
+    args.lw = 1
+    args.expand = 3
+    args.channel = 3
+    args.lc = (0, 0, 0)
+    args.bc = (1, 1, 1)
+    args.model_type = 1
+
+    data_set = Dataset_Basic(args=args, flag='test')
+    print(len(data_set))
+
+    data = []
+    for i in range(96):
+        data.append(np.sin(i))
+    fig1 = data_set.data2Pixel(np.asarray(data)[:, np.newaxis], draw_type='opencv')
+    fig2 = data_set.data2Pixel(np.asarray(data)[:, np.newaxis], draw_type='matplotlib')
+    fig3 = data_set.data2Pixel(np.asarray(data)[:, np.newaxis], draw_type='sampling')
+    pass

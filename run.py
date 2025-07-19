@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('--data', type=str, default='ETTh1', help='data type')
     parser.add_argument('--dir_path', type=str, default='./data/ETT-small', help='dir path')
     parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file name')
-    parser.add_argument('--features', type=str, default='S',
+    parser.add_argument('--features', type=str, default='M',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='OT', help='target feature in S or MS task')
     parser.add_argument('--freq', type=str, default='h',
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu id')
     parser.add_argument('--use_multi_gpu', action='store_true', default=False, help='use multiple gpus')
-    parser.add_argument('--devices', type=str, default='0,1', help='gpu ids of multiple gpus')
+    parser.add_argument('--devices', type=str, default='1', help='gpu ids of multiple gpus')
 
     args = parser.parse_args()
     args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
