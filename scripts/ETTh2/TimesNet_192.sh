@@ -17,5 +17,4 @@ nohup python run.py \
       --dropout 0 \
       --batch_size 32 \
       --learning_rate 0.005 \
-      --use_multi_gpu \
       > ETTh2_TimesNet_192.txt 2>&1 &

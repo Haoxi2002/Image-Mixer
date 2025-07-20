@@ -10,7 +10,7 @@ class Model(nn.Module):
         self.args = args
         self.token_dim = (args.h * args.expand // args.patch_size[0]) * (args.seq_len * args.expand // args.patch_size[1])  # token <==> patch
         self.conv_embedding = nn.Conv2d(args.channel, args.hidden_dim, stride=args.patch_size, kernel_size=args.patch_size, padding=0)
-        self.static_embedding = nn.Linear(9, args.pred_len)
+        self.static_embedding = nn.Linear(7, args.pred_len)
         self.blocks = nn.ModuleList(
             [MixerBlock(args.hidden_dim, self.token_dim, args.token_mlp_dim, args.channel_mlp_dim, args.dropout) for _
              in range(args.n_blocks)])
@@ -21,7 +21,7 @@ class Model(nn.Module):
         """
     input:    
         x: (batch_size, channel*features, h, seq_len)
-        static: (batch_size, features, 9)
+        static: (batch_size, features, 7)
     output:
         seq_y: (batch_size, pred_len, features)   
     """
@@ -30,7 +30,7 @@ class Model(nn.Module):
         bs, f_c, h, w = x.shape
         # CI
         x = torch.reshape(x, (-1, self.args.channel, h, w))
-        static = torch.reshape(static, (-1, 1, 9))
+        static = torch.reshape(static, (-1, 1, 7))
 
         # encoder
         x = self.conv_embedding(x)

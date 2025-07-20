@@ -17,5 +17,4 @@ nohup python run.py \
       --dropout 0 \
       --batch_size 64 \
       --learning_rate 0.005 \
-      --use_multi_gpu \
       > ETTm2_PatchTST_192.txt 2>&1 &
