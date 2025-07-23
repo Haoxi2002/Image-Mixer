@@ -43,6 +43,9 @@ class Dataset_Basic(Dataset):
     def data2Pixel(self, dataXIn, draw_type='opencv'):
         assert draw_type in ['matplotlib', 'opencv', 'sampling']
         dataX = np.copy(dataXIn.T)
+        low = np.percentile(dataX, 2.5, axis=1, keepdims=True)
+        high = np.percentile(dataX, 97.5, axis=1, keepdims=True)
+        dataX = dataX.clip(low, high)
         feature = dataX.shape[0]
         lenX = dataX.shape[1]
 
@@ -162,7 +165,7 @@ class Dataset_Basic(Dataset):
             np.std(self.data[s_begin:s_end], axis=0)[:, np.newaxis]
         ], axis=1)
         if self.model_type == 0:
-            return self.data[s_begin:s_end], self.data[r_begin:r_end], self.fig_data[:, :, s_begin:s_end], static, 0, 0
+            return self.data[s_begin:s_end], self.data[r_begin:r_end], self.fig_data[:, :, s_begin*self.expand:s_end*self.expand], static, 0, 0
         else:
             return self.data[s_begin:s_end], self.data[r_begin:r_end], 0, 0, self.data_stamp[s_begin:s_end], self.data_stamp[r_begin:r_end]
 

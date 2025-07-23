@@ -15,6 +15,7 @@ nohup python run.py \
       --n_heads 2 \
       --d_ff 2048 \
       --dropout 0 \
-      --batch_size 64 \
+      --batch_size 128 \
       --learning_rate 0.005 \
+      --use_multi_gpu \
       > electricity_TSMixer_336.txt 2>&1 &

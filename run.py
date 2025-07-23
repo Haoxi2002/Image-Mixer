@@ -23,9 +23,9 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='ImageMixer', help='model name')
 
     # data loader
-    parser.add_argument('--data', type=str, default='ETTh1', help='data type')
+    parser.add_argument('--data', type=str, default='ETTh2', help='data type')
     parser.add_argument('--dir_path', type=str, default='./data/ETT-small', help='dir path')
-    parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file name')
+    parser.add_argument('--data_path', type=str, default='ETTh2.csv', help='data file name')
     parser.add_argument('--features', type=str, default='M',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='OT', help='target feature in S or MS task')
@@ -40,17 +40,17 @@ if __name__ == '__main__':
     parser.add_argument('--inverse', action='store_true', default=False, help='inverse output data')
 
     # fig config
-    parser.add_argument('--h', type=int, default=24, help='h')
+    parser.add_argument('--h', type=int, default=96, help='h')
     parser.add_argument('--lw', type=float, default=1, help='line width')
-    parser.add_argument('--expand', type=int, default=1, help='expansion rate')
-    parser.add_argument('--channel', type=int, default=3, help='3 for RGB and 1 for Grey')
+    parser.add_argument('--expand', type=int, default=3, help='expansion rate')
+    parser.add_argument('--channel', type=int, default=1, help='3 for RGB and 1 for Grey')
     parser.add_argument('--lc', type=float, nargs='+', default=(0, 0, 0), help='line color')
     parser.add_argument('--bc', type=float, nargs='+', default=(1, 1, 1), help='background color')
-    parser.add_argument('--hidden_dim', type=int, default=16, help='hidden dimension')
+    parser.add_argument('--hidden_dim', type=int, default=4, help='hidden dimension')
     parser.add_argument('--channel_mlp_dim', type=int, default=128, help='channel_mlp_dim')
-    parser.add_argument('--patch_size', type=int, nargs='+', default=(8, 8), help='patch_size')
+    parser.add_argument('--patch_size', type=int, nargs='+', default=(16, 16), help='patch_size')
     parser.add_argument('--token_mlp_dim', type=int, default=256, help='token_mlp_dim')
-    parser.add_argument('--n_blocks', type=int, default=6, help='block numbers of backbone')
+    parser.add_argument('--n_blocks', type=int, default=4, help='block numbers of backbone')
 
     # numerical config
     parser.add_argument('--top_k', type=int, default=5, help='for TimesNet')
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # optimization
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
     parser.add_argument('--train_epochs', type=int, default=20, help='train epochs')
-    parser.add_argument('--batch_size', type=int, default=512, help='batch size of train input data')
+    parser.add_argument('--batch_size', type=int, default=64, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='patience for early stop')
     parser.add_argument('--dropout', type=float, default=0.15, help='dropout rate')
     parser.add_argument('--learning_rate', type=float, default=0.003, help='optimizer learning rate')
